@@ -4,6 +4,7 @@ import lombok.*;
 import me.mrepiko.cymric.mics.Utils;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -120,22 +121,8 @@ public class MessageEmbedData {
         }
         if (fields != null && !fields.isEmpty()) {
             for (FieldData field : fields) {
-                if (field.isBlank()) {
-                    embedBuilder.addBlankField(field.isInline());
-                    continue;
-                }
-                String fieldName = field.getName();
-                String value = field.getValue();
-
-                if ((fieldName == null || fieldName.isEmpty()) && (value == null || value.isEmpty())) {
-                    continue;
-                }
-
-                embedBuilder.addField(
-                        Utils.truncateString(Utils.applyPlaceholders(map, fieldName), 256, truncationIndicator),
-                        Utils.truncateString(Utils.applyPlaceholders(map, value), 1024, truncationIndicator),
-                        field.isInline()
-                );
+                MessageEmbed.Field embedField = field.getField(map, truncationIndicator);
+                embedBuilder.addField(embedField);
             }
         }
         return embedBuilder;
