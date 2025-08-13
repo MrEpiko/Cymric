@@ -1,0 +1,31 @@
+package me.mrepiko.cymric.elements.command;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import me.mrepiko.cymric.elements.command.data.CommandData;
+import me.mrepiko.cymric.elements.ConditionalHolder;
+import me.mrepiko.cymric.elements.command.data.JdaCommandData;
+import me.mrepiko.cymric.elements.plain.SerializableBotElement;
+import me.mrepiko.cymric.placeholders.PlaceholderMap;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
+@Getter
+public abstract class CommandHolder<T> extends ConditionalHolder implements CommandTemplate, SerializableBotElement<T> {
+
+    @Setter(AccessLevel.PROTECTED)
+    private CommandData commandData;
+    @Setter
+    private Command discordCommand;
+
+    @NotNull
+    @Override
+    public abstract String getFullName();
+
+    @NotNull
+    public abstract List<JdaCommandData> getJdaCommandData(@Nullable PlaceholderMap map);
+}
