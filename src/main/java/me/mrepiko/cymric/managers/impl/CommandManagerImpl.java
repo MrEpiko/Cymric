@@ -13,7 +13,7 @@ import me.mrepiko.cymric.context.commands.impl.PrefixCommandContextImpl;
 import me.mrepiko.cymric.context.commands.impl.SlashCommandContextImpl;
 import me.mrepiko.cymric.discord.DiscordCache;
 import me.mrepiko.cymric.elements.DeferType;
-import me.mrepiko.cymric.elements.command.CommandHolder;
+import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.elements.command.chat.ChatCommandType;
 import me.mrepiko.cymric.elements.command.chat.CommandFunctionalityType;
 import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
@@ -45,7 +45,7 @@ import java.util.List;
 
 import static me.mrepiko.cymric.mics.Utils.applyPlaceholders;
 
-public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> implements CommandManager {
+public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> implements CommandManager {
 
     private final CymricApi instance = DiscordBot.getInstance();
     private final CymricConfig config = instance.getConfig();
@@ -55,7 +55,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
             Constants.CONTEXTUAL_COMMAND_CONFIGURATION_FOLDER_PATH
     );
 
-    private final List<Class<? extends CommandHolder<?>>> commandTypes = List.of(
+    private final List<Class<? extends CommandLoader<?>>> commandTypes = List.of(
             GenericChatCommand.class,
             GenericContextualCommand.class
     );
@@ -112,7 +112,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
                 .toList();
     }
 
-    private boolean shouldIncludeCommand(CommandHolder<?> commandHolder, CommandAvailabilityType type, @Nullable Guild guild) {
+    private boolean shouldIncludeCommand(CommandLoader<?> commandHolder, CommandAvailabilityType type, @Nullable Guild guild) {
         CommandData data = commandHolder.getCommandData();
 
         if (commandHolder instanceof GenericChatCommand chatCommand) {
@@ -156,9 +156,9 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
 
     private void handlePostRegistration(List<Command> commands) {
         for (Command command : commands) {
-            CommandHolder<?> holder = getByFullName(
+            CommandLoader<?> holder = getByFullName(
                     command.getFullCommandName(),
-                    CommandHolder.class
+                    CommandLoader.class
             );
             if (holder == null) {
                 throw new IllegalArgumentException("Command with full name " + command.getFullCommandName() + " not found in registered commands.");
@@ -169,7 +169,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
     }
 
     // Set Discord command for (grand)children commands
-    private void handleChildrenRegistration(@NotNull CommandHolder<?> holder, @NotNull Command discordCommand) {
+    private void handleChildrenRegistration(@NotNull CommandLoader<?> holder, @NotNull Command discordCommand) {
         if (!(holder instanceof GenericChatCommand chatCommand)) {
             return;
         }
@@ -197,7 +197,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
         for (String path : DIRECTORY_PATHS) {
             setupDirectory(path);
         }
-        for (Class<? extends CommandHolder<?>> type : commandTypes) {
+        for (Class<? extends CommandLoader<?>> type : commandTypes) {
             register(CymricCommand.class, type);
         }
         formCommandFamilyTree();
@@ -207,7 +207,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
 
     // This method organizes commands into a family tree structure (parent, child, grandchild).
     private void formCommandFamilyTree() {
-        for (CommandHolder<?> holder : elements.values()) {
+        for (CommandLoader<?> holder : elements.values()) {
             if (!(holder instanceof GenericChatCommand chatCommand)) {
                 continue;
             }
@@ -222,7 +222,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
             }
 
             for (String childId : childrenIds) {
-                CommandHolder<?> childHolder = getById(childId);
+                CommandLoader<?> childHolder = getById(childId);
                 if (!(childHolder instanceof GenericChatCommand child)) {
                     throw new IllegalArgumentException("Child command with ID " + childId + " is not a GenericChatCommand.");
                 }
@@ -239,7 +239,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
     }
 
     private void validateFamilyTree() {
-        for (CommandHolder<?> holder : elements.values()) {
+        for (CommandLoader<?> holder : elements.values()) {
             if (!(holder instanceof GenericChatCommand parent)) {
                 continue;
             }
@@ -300,8 +300,8 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
     // Getters
 
     @Nullable
-    private <T extends CommandHolder<?>> T getByFullName(@NotNull String fullName, @NotNull Class<T> clazz) {
-        for (CommandHolder<?> value : elements.values()) {
+    private <T extends CommandLoader<?>> T getByFullName(@NotNull String fullName, @NotNull Class<T> clazz) {
+        for (CommandLoader<?> value : elements.values()) {
             if (!clazz.isInstance(value)) {
                 continue;
             }
@@ -316,7 +316,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
 
     @Override
     public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
-        CommandHolder<?> holder = getByFullName(event.getFullCommandName(), GenericContextualCommand.class);
+        CommandLoader<?> holder = getByFullName(event.getFullCommandName(), GenericContextualCommand.class);
         if (!(holder instanceof GenericContextualCommand contextualCommand)) {
             return;
         }
@@ -335,7 +335,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
 
     @Override
     public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
-        CommandHolder<?> holder = getByFullName(event.getFullCommandName(), GenericContextualCommand.class);
+        CommandLoader<?> holder = getByFullName(event.getFullCommandName(), GenericContextualCommand.class);
         if (!(holder instanceof GenericContextualCommand contextualCommand)) {
             return;
         }

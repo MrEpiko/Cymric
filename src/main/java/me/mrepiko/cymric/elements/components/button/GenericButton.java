@@ -1,49 +1,27 @@
 package me.mrepiko.cymric.elements.components.button;
 
 import lombok.Getter;
-import lombok.experimental.Delegate;
-import me.mrepiko.cymric.config.ConfigFile;
 import me.mrepiko.cymric.context.components.ButtonContext;
 import me.mrepiko.cymric.elements.ElementError;
 import me.mrepiko.cymric.elements.components.RowComponent;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.elements.components.button.data.ForgedButtonData;
-import me.mrepiko.cymric.jackson.JsonContainer;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import me.mrepiko.cymric.mics.Constants;
-import me.mrepiko.cymric.jackson.JacksonUtils;
 import me.mrepiko.cymric.mics.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-public abstract class GenericButton extends ComponentHolder<ForgedButtonData> implements ButtonTemplate {
-
-    private final String filePath;
-
-    protected final String id;
-    @Delegate
-    protected JsonContainer config;
-    protected ForgedButtonData data;
-
-    private boolean configMissing;
+public abstract class GenericButton extends ComponentLoader<ForgedButtonData> implements ButtonTemplate {
 
     public GenericButton(@NotNull String id) {
-        this.id = id;
-        this.filePath = Constants.BUTTON_CONFIGURATION_FOLDER_PATH + id + ".json";
-        if (!Utils.isFileExists(this.filePath)) {
-            this.configMissing = true;
-        }
+        super(id, Constants.BUTTON_CONFIGURATION_FOLDER_PATH);
     }
 
     @Override
     public void reload() {
-        if (this.configMissing) {
-            return;
-        }
-        this.config = new JsonContainer(new ConfigFile(this.filePath));
-        setupConfig();
-        JacksonUtils.mergeDeclaredFieldsFromJson(this, config);
+        super.reload();
         if (this.configMissing) {
             return;
         }
@@ -52,7 +30,8 @@ public abstract class GenericButton extends ComponentHolder<ForgedButtonData> im
         super.setComponentData(data.getComponentData());
     }
 
-    private void setupConfig() {
+    @Override
+    public void initializeData() {
         ForgedButtonData emptyData = new ForgedButtonData();
         this.data = config.getOrSetDefault("properties", ForgedButtonData.class, emptyData);
         if (this.data == emptyData) {

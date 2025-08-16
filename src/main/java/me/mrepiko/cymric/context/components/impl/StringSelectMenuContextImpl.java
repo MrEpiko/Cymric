@@ -1,7 +1,7 @@
 package me.mrepiko.cymric.context.components.impl;
 
 import lombok.AllArgsConstructor;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
 import me.mrepiko.cymric.context.components.StringSelectMenuContext;
 import net.dv8tion.jda.api.entities.Guild;
@@ -62,7 +62,7 @@ public class StringSelectMenuContextImpl implements StringSelectMenuContext {
 
     @NotNull
     @Override
-    public ComponentHolder<?> getComponentHolder() {
+    public ComponentLoader<?> getComponentHolder() {
         return runtimeComponent.getElement();
     }
 

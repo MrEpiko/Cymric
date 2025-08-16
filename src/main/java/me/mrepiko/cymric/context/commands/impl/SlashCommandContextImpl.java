@@ -2,7 +2,7 @@ package me.mrepiko.cymric.context.commands.impl;
 
 import lombok.Getter;
 import me.mrepiko.cymric.context.commands.SlashCommandContext;
-import me.mrepiko.cymric.elements.command.CommandHolder;
+import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -40,7 +40,7 @@ public class SlashCommandContextImpl implements SlashCommandContext {
 
     @NotNull
     @Override
-    public CommandHolder<?> getCommandHolder() {
+    public CommandLoader<?> getCommandHolder() {
         return command;
     }
 

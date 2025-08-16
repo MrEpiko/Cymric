@@ -2,7 +2,7 @@ package me.mrepiko.cymric.context.components;
 
 import me.mrepiko.cymric.context.ReplyCallbackContext;
 import me.mrepiko.cymric.context.plain.MessageContext;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
@@ -16,7 +16,7 @@ public interface ComponentContext extends MessageContext, ReplyCallbackContext {
     ComponentInteraction getComponentInteraction();
 
     @NotNull
-    ComponentHolder<?> getComponentHolder();
+    ComponentLoader<?> getComponentHolder();
 
     @NotNull
     @Override

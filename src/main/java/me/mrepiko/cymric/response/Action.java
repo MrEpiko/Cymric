@@ -13,7 +13,7 @@ import me.mrepiko.cymric.context.plain.MessageContext;
 import me.mrepiko.cymric.context.plain.impl.MessageChannelContextImpl;
 import me.mrepiko.cymric.context.plain.impl.MessageContextImpl;
 import me.mrepiko.cymric.discord.DiscordCache;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.elements.components.button.GenericButton;
 import me.mrepiko.cymric.elements.components.button.data.ForgedButtonData;
 import me.mrepiko.cymric.elements.components.selectmenus.entityselect.GenericEntitySelectMenu;
@@ -68,7 +68,7 @@ public class Action {
     private boolean channelOrMessageProvided = false;
 
     // Class that extends ComponentHolder: Data (ButtonData, StringSelectMenuData, etc.)
-    private final List<Pair<ComponentHolder<?>, Object>> components = new ArrayList<>();
+    private final List<Pair<ComponentLoader<?>, Object>> components = new ArrayList<>();
 
     // Class that extends Modal: ModalData
     @Nullable
@@ -101,9 +101,9 @@ public class Action {
         addComponent(clazz, data);
     }
 
-    private void addComponent(@NotNull Class<? extends ComponentHolder<?>> clazz, @NotNull Object data) {
+    private void addComponent(@NotNull Class<? extends ComponentLoader<?>> clazz, @NotNull Object data) {
         ComponentManager componentManager = instance.getComponentManager();
-        ComponentHolder<?> holder = componentManager.getByClass(clazz);
+        ComponentLoader<?> holder = componentManager.getByClass(clazz);
         this.components.add(new Pair<>(holder, data));
     }
 
@@ -120,8 +120,8 @@ public class Action {
     }
 
     public void injectStringSelectMenuOptions(@NotNull Class<? extends GenericStringSelectMenu> clazz, @NotNull List<StringSelectMenuOptionData> options) {
-        ComponentHolder<?> holder = componentManager.getByClass(clazz);
-        for (Pair<ComponentHolder<?>, Object> pair : components) {
+        ComponentLoader<?> holder = componentManager.getByClass(clazz);
+        for (Pair<ComponentLoader<?>, Object> pair : components) {
             if (pair.getFirst() != holder) {
                 continue;
             }
@@ -247,7 +247,7 @@ public class Action {
                 continue;
             }
 
-            ComponentHolder<?> holder = componentManager.getById(id);
+            ComponentLoader<?> holder = componentManager.getById(id);
             F deepCopy;
             try {
                 deepCopy = (F) JacksonUtils.deepCopy(holder.getData());

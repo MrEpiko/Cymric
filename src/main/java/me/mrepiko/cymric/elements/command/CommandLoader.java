@@ -4,8 +4,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import me.mrepiko.cymric.elements.command.data.CommandData;
-import me.mrepiko.cymric.elements.ConditionalHolder;
+import me.mrepiko.cymric.elements.ConditionalElementLoader;
 import me.mrepiko.cymric.elements.command.data.JdaCommandData;
+import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
 import me.mrepiko.cymric.elements.plain.SerializableBotElement;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -15,12 +16,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @Getter
-public abstract class CommandHolder<T> extends ConditionalHolder implements CommandTemplate, SerializableBotElement<T> {
+public abstract class CommandLoader<T extends ConditionalDataContainer> extends ConditionalElementLoader<T> implements CommandTemplate, SerializableBotElement<T> {
 
     @Setter(AccessLevel.PROTECTED)
     private CommandData commandData;
     @Setter
     private Command discordCommand;
+
+    public CommandLoader(@NotNull String id, @NotNull String folderPath) {
+        super(id, folderPath);
+    }
 
     @NotNull
     @Override

@@ -5,7 +5,7 @@ import me.mrepiko.cymric.CymricApi;
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.context.components.ComponentContext;
 import me.mrepiko.cymric.context.modal.ModalContext;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.GenericStringSelectMenu;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.data.StringSelectMenuOptionData;
 import me.mrepiko.cymric.elements.modal.ModalTemplate;
@@ -45,7 +45,7 @@ public class ResponseBuilder {
     private final OperationsContainer operationsContainer = new OperationsContainer();
     private final RuntimeExtra runtimeExtra = new RuntimeExtra();
 
-    private final Map<Class<? extends ComponentHolder<?>>, Consumer<ComponentContext>> componentInteractionOverrides = new HashMap<>();
+    private final Map<Class<? extends ComponentLoader<?>>, Consumer<ComponentContext>> componentInteractionOverrides = new HashMap<>();
     private final Map<Class<? extends ModalTemplate>, Consumer<ModalContext>> modalInteractionOverrides = new HashMap<>();
 
     private ResponseBuilder(PlaceholderMap map, @Nullable Action action, @Nullable ResponseChain responseChain) {
@@ -96,7 +96,7 @@ public class ResponseBuilder {
         return this;
     }
 
-    public ResponseBuilder overrideComponentInteraction(@NotNull Class<? extends ComponentHolder<?>> clazz, @NotNull Consumer<ComponentContext> consumer) {
+    public ResponseBuilder overrideComponentInteraction(@NotNull Class<? extends ComponentLoader<?>> clazz, @NotNull Consumer<ComponentContext> consumer) {
         this.componentInteractionOverrides.put(clazz, consumer);
         return this;
     }

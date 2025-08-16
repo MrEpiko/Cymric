@@ -2,7 +2,7 @@ package me.mrepiko.cymric.context.commands.impl;
 
 import lombok.Getter;
 import me.mrepiko.cymric.context.commands.ContextualCommandContext;
-import me.mrepiko.cymric.elements.command.CommandHolder;
+import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.elements.command.contextual.GenericContextualCommand;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -51,7 +51,7 @@ public class ContextualCommandContextImpl implements ContextualCommandContext {
 
     @NotNull
     @Override
-    public CommandHolder<?> getCommandHolder() {
+    public CommandLoader<?> getCommandHolder() {
         return command;
     }
 

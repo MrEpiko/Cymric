@@ -2,8 +2,8 @@ package me.mrepiko.cymric.elements;
 
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.config.ConfigFile;
-import me.mrepiko.cymric.config.main.CymricConfig;
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
+import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
 import me.mrepiko.cymric.elements.data.ConditionalData;
 import me.mrepiko.cymric.elements.plain.Conditionable;
 import me.mrepiko.cymric.jackson.JsonContainer;
@@ -27,13 +27,14 @@ import java.util.*;
 
 import static me.mrepiko.cymric.mics.Utils.applyPlaceholders;
 
-public abstract class ConditionalHolder implements Conditionable {
-
-    private final CymricConfig config = DiscordBot.getInstance().getConfig();
+public abstract class ConditionalElementLoader<T extends ConditionalDataContainer> extends ElementLoader<T> implements Conditionable {
 
     private ConditionalData parentConditionalData;
-
     private final Map<String, Long> cooldowns = new HashMap<>();
+
+    public ConditionalElementLoader(@NotNull String id, @NotNull String folderPath) {
+        super(id, folderPath);
+    }
 
     @NotNull
     protected ResponseData getErrorResponseData(@NotNull ElementError elementError) {
@@ -323,12 +324,12 @@ public abstract class ConditionalHolder implements Conditionable {
         return true;
     }
 
-    private <T> boolean contains(@NotNull List<T> list, @Nullable T item) {
+    private <V> boolean contains(@NotNull List<V> list, @Nullable V item) {
         return item != null && list.contains(item);
     }
 
-    private <T> boolean containsAtLeastOne(@NotNull List<T> list, @NotNull Collection<T> items) {
-        for (T item : items) {
+    private <V> boolean containsAtLeastOne(@NotNull List<V> list, @NotNull Collection<V> items) {
+        for (V item : items) {
             if (list.contains(item)) {
                 return true;
             }

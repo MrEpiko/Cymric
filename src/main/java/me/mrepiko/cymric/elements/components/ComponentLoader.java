@@ -6,7 +6,7 @@ import me.mrepiko.cymric.CymricApi;
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.context.plain.MessageContext;
 import me.mrepiko.cymric.discord.DiscordUtils;
-import me.mrepiko.cymric.elements.ConditionalHolder;
+import me.mrepiko.cymric.elements.ConditionalElementLoader;
 import me.mrepiko.cymric.elements.data.ComponentData;
 import me.mrepiko.cymric.elements.data.TimeoutableElementData;
 import me.mrepiko.cymric.elements.plain.ComponentTemplate;
@@ -20,12 +20,16 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
-public abstract class ComponentHolder<T> extends ConditionalHolder implements ComponentTemplate, SerializableBotElement<T> {
+public abstract class ComponentLoader<T extends ForgedComponentDataContainer> extends ConditionalElementLoader<T> implements ComponentTemplate, SerializableBotElement<T> {
 
     private final CymricApi instance = DiscordBot.getInstance();
 
     private TimeoutableElementData timeoutableData;
     private ComponentData componentData;
+
+    public ComponentLoader(@NotNull String id, @NotNull String folderPath) {
+        super(id, folderPath);
+    }
 
     @Override
     public void onTimeout(@NotNull RuntimeComponent runtimeComponent, @NotNull MessageContext context) {

@@ -1,7 +1,6 @@
 package me.mrepiko.cymric.managers.impl;
 
 import me.mrepiko.cymric.DiscordBot;
-import me.mrepiko.cymric.annotations.elements.CymricCommand;
 import me.mrepiko.cymric.annotations.elements.CymricComponent;
 import me.mrepiko.cymric.context.components.ButtonContext;
 import me.mrepiko.cymric.context.components.ComponentContext;
@@ -12,7 +11,7 @@ import me.mrepiko.cymric.context.components.impl.EntitySelectMenuContextImpl;
 import me.mrepiko.cymric.context.components.impl.StringSelectMenuContextImpl;
 import me.mrepiko.cymric.discord.DiscordUtils;
 import me.mrepiko.cymric.elements.DeferType;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
 import me.mrepiko.cymric.elements.components.button.GenericButton;
 import me.mrepiko.cymric.elements.components.button.data.ForgedButtonData;
@@ -40,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class ComponentManagerImpl extends GenericElementManager<ComponentHolder<?>> implements ComponentManager {
+public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<?>> implements ComponentManager {
 
     // Unique element ID: RuntimeComponent
     // ID above refers to element ID with mix of characters at the end
@@ -52,7 +51,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentHolder<
             Constants.ENTITY_SELECT_MENU_CONFIGURATION_FOLDER_PATH
     );
 
-    private final List<Class<? extends ComponentHolder<?>>> componentTypes = List.of(
+    private final List<Class<? extends ComponentLoader<?>>> componentTypes = List.of(
             GenericButton.class,
             GenericStringSelectMenu.class,
             GenericEntitySelectMenu.class
@@ -86,7 +85,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentHolder<
         return components;
     }
 
-    private RuntimeComponent createRuntimeComponent(@Nullable RuntimeComponent runtimeComponent, @NotNull User creator, @NotNull ComponentHolder<?> componentHolder, @NotNull ForgedComponentDataContainer overriddenData, @NotNull ActionComponent actionComponent) {
+    private RuntimeComponent createRuntimeComponent(@Nullable RuntimeComponent runtimeComponent, @NotNull User creator, @NotNull ComponentLoader<?> componentHolder, @NotNull ForgedComponentDataContainer overriddenData, @NotNull ActionComponent actionComponent) {
         if (runtimeComponent != null) {
             return runtimeComponent;
         }
@@ -105,7 +104,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentHolder<
         for (String path : DIRECTORY_PATHS) {
             setupDirectory(path);
         }
-        for (Class<? extends ComponentHolder<?>> type : componentTypes) {
+        for (Class<? extends ComponentLoader<?>> type : componentTypes) {
             register(CymricComponent.class, type);
         }
     }
@@ -192,7 +191,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentHolder<
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private <T extends ComponentContext> boolean handleComponentInteraction(
             @NotNull GenericComponentInteractionCreateEvent event,
-            @NotNull ComponentHolder<?> holder,
+            @NotNull ComponentLoader<?> holder,
             @NotNull ForgedComponentDataContainer data,
             @NotNull T context,
             @NotNull RuntimeComponent runtimeComponent
@@ -223,7 +222,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentHolder<
         return true;
     }
 
-    private boolean isCreatorInvalid(ComponentHolder<?> holder, @Nullable RuntimeComponent runtimeComponent, User invoker) {
+    private boolean isCreatorInvalid(ComponentLoader<?> holder, @Nullable RuntimeComponent runtimeComponent, User invoker) {
         if (!holder.getComponentData().isCreatorOnly()) {
             return false;
         }

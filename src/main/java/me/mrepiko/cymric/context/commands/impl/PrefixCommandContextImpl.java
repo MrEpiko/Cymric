@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.mrepiko.cymric.context.commands.PrefixCommandContext;
 import me.mrepiko.cymric.discord.DiscordCache;
-import me.mrepiko.cymric.elements.command.CommandHolder;
+import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -383,7 +383,7 @@ public class PrefixCommandContextImpl implements PrefixCommandContext {
 
     @NotNull
     @Override
-    public CommandHolder<?> getCommandHolder() {
+    public CommandLoader<?> getCommandHolder() {
         return command;
     }
 

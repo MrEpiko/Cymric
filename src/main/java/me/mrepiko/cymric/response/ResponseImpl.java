@@ -11,7 +11,7 @@ import me.mrepiko.cymric.context.modal.ModalContext;
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
 import me.mrepiko.cymric.discord.DiscordCache;
 import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.elements.components.RowComponent;
 import me.mrepiko.cymric.elements.modal.GenericModal;
 import me.mrepiko.cymric.elements.modal.data.ForgedModalData;
@@ -44,11 +44,9 @@ import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
@@ -74,7 +72,7 @@ public class ResponseImpl implements Response {
     private final RuntimeExtra runtimeExtra;
     @Nullable
     private final MessageChannelContext context;
-    private final Map<Class<? extends ComponentHolder<?>>, Consumer<ComponentContext>> componentInteractionOverrides;
+    private final Map<Class<? extends ComponentLoader<?>>, Consumer<ComponentContext>> componentInteractionOverrides;
     private final Map<Class<? extends ModalTemplate>, Consumer<ModalContext>> modalInteractionOverrides;
 
     protected ResponseImpl(@NotNull ResponseBuilder builder) {
@@ -453,13 +451,13 @@ public class ResponseImpl implements Response {
 
         // ActionComponent: Row index (0-4)
         Map<ActionComponent, Integer> indexes = new HashMap<>();
-        List<Pair<ComponentHolder<?>, Object>> components = action.getComponents();
+        List<Pair<ComponentLoader<?>, Object>> components = action.getComponents();
         if (components == null || components.isEmpty()) {
             return Collections.emptyList();
         }
 
-        for (Pair<ComponentHolder<?>, Object> pair : components) {
-            ComponentHolder<?> holder = pair.getFirst();
+        for (Pair<ComponentLoader<?>, Object> pair : components) {
+            ComponentLoader<?> holder = pair.getFirst();
             Object dataObject = pair.getSecond();
             RowComponent rowComponent = holder.getRowComponent(map, dataObject);
             ActionComponent actionComponent = rowComponent.getActionComponent();

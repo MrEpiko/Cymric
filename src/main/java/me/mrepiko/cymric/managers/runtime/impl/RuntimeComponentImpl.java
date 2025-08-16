@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.mrepiko.cymric.context.components.ComponentContext;
 import me.mrepiko.cymric.context.plain.impl.MessageContextImpl;
-import me.mrepiko.cymric.elements.components.ComponentHolder;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
 import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
 import me.mrepiko.cymric.managers.runtime.RuntimeExtra;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 public class RuntimeComponentImpl implements RuntimeComponent {
 
     private final ActionComponent actionComponent;
-    private final ComponentHolder<?> element;
+    private final ComponentLoader<?> element;
     private final ForgedComponentDataContainer overriddenData;
     private final RuntimeExtra extra = new RuntimeExtra();
 
@@ -39,7 +39,7 @@ public class RuntimeComponentImpl implements RuntimeComponent {
 
     public RuntimeComponentImpl(
             @NotNull User creator,
-            @NotNull ComponentHolder<?> element,
+            @NotNull ComponentLoader<?> element,
             @Nullable ForgedComponentDataContainer overriddenData,
             @NotNull ActionComponent actionComponent,
             @NotNull RuntimeExtra extra,
@@ -63,7 +63,7 @@ public class RuntimeComponentImpl implements RuntimeComponent {
     @Override
     @NotNull
     public ForgedComponentDataContainer getOverriddenData() {
-        return overriddenData != null ? overriddenData : (ForgedComponentDataContainer) element.getData();
+        return overriddenData != null ? overriddenData : element.getData();
     }
 
     @Override

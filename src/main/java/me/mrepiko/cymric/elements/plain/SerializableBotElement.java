@@ -11,4 +11,6 @@ public interface SerializableBotElement<T> extends BotElement, Configurable, Rel
      * Indicates that either configuration file is missing or configuration is incomplete.
      */
     boolean isConfigMissing();
+
+    void initializeData();
 }

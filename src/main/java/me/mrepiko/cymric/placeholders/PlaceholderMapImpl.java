@@ -6,7 +6,7 @@ import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.config.main.CymricConfig;
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
 import me.mrepiko.cymric.context.plain.MessageContext;
-import me.mrepiko.cymric.elements.command.CommandHolder;
+import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.mics.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -49,7 +49,7 @@ public class PlaceholderMapImpl implements PlaceholderMap {
             config.getConstants().forEach((key, value) -> put("c_" + key, value));
         }
         if (includeCommandPlaceholders) {
-            for (CommandHolder<?> holder : instance.getCommandManager().getRegistered()) {
+            for (CommandLoader<?> holder : instance.getCommandManager().getRegistered()) {
                 Command discordCommand = holder.getDiscordCommand();
                 if (discordCommand == null) {
                     continue;
@@ -135,9 +135,7 @@ public class PlaceholderMapImpl implements PlaceholderMap {
 
         if (context instanceof MessageContext messageContext) {
             Message message = messageContext.getMessage();
-            if (message != null) {
-                put(identifier + "_message", message);
-            }
+            put(identifier + "_message", message);
         }
 
         put(identifier + "_channel", context.getMessageChannel());
