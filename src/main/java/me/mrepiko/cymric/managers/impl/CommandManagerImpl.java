@@ -19,7 +19,6 @@ import me.mrepiko.cymric.elements.command.chat.CommandFunctionalityType;
 import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
 import me.mrepiko.cymric.elements.command.chat.data.ForgedChatCommandData;
 import me.mrepiko.cymric.elements.command.chat.subtypes.ParentChatCommand;
-import me.mrepiko.cymric.elements.command.chat.subtypes.ResponseChatCommand;
 import me.mrepiko.cymric.elements.command.contextual.GenericContextualCommand;
 import me.mrepiko.cymric.elements.command.contextual.data.ForgedContextualCommandData;
 import me.mrepiko.cymric.elements.command.data.CommandAvailabilityType;
@@ -162,7 +161,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
                     CommandHolder.class
             );
             if (holder == null) {
-                throw new IllegalArgumentException("Command with full folderPath " + command.getFullCommandName() + " not found in registered commands.");
+                throw new IllegalArgumentException("Command with full name " + command.getFullCommandName() + " not found in registered commands.");
             }
             handleChildrenRegistration(holder, command);
             holder.setDiscordCommand(command);
@@ -491,7 +490,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
     }
 
     @AllArgsConstructor
-    private class PrefixCommandPayload {
+    private static class PrefixCommandPayload {
         private final GenericChatCommand genericChatCommand;
         private final List<String> args;
     }
