@@ -79,11 +79,11 @@ public class JsonContainer {
         }
     }
 
-    private void repair(Object defaultValue) {
+    private void repair(ObjectNode node, Object defaultValue) {
         ObjectNode defaultNode = mapper.valueToTree(defaultValue);
         defaultNode.fieldNames().forEachRemaining(field -> {
-            if (!mainNode.has(field)) {
-                mainNode.set(field, defaultNode.get(field));
+            if (!node.has(field)) {
+                node.set(field, defaultNode.get(field));
             }
         });
         saveConfig();
@@ -246,7 +246,7 @@ public class JsonContainer {
         if (has(key)) {
             JsonNode node = mainNode.get(key);
             if (repair) {
-                repair(defaultValue);
+                repair((ObjectNode) node, defaultValue);
             }
             return node.isNull() ? defaultValue : mapper.convertValue(node, type);
         }
@@ -279,7 +279,7 @@ public class JsonContainer {
             return defaultValue;
         }
         if (repair) {
-            repair(defaultValue);
+            repair(mainNode, defaultValue);
         }
         return getAs(type);
     }
