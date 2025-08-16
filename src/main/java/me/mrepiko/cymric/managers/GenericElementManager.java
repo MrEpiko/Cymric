@@ -2,7 +2,6 @@ package me.mrepiko.cymric.managers;
 
 import me.mrepiko.cymric.CymricApi;
 import me.mrepiko.cymric.DiscordBot;
-import me.mrepiko.cymric.annotations.elements.CymricCommand;
 import me.mrepiko.cymric.elements.plain.BotElement;
 import me.mrepiko.cymric.elements.plain.Reloadable;
 import me.mrepiko.cymric.elements.plain.SerializableBotElement;
@@ -37,16 +36,16 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
 
     @Override
     @SuppressWarnings("unchecked")
-    public void register(@NotNull Class<? extends Annotation> annotation, @NotNull Class<? extends T> type) {
+    public void register(@NotNull Class<? extends Annotation> annotation, @Nullable Class<? extends T> type) {
         Set<Class<?>> classes = CymricApi.reflections.getTypesAnnotatedWith(annotation);
         for (Class<?> clazz : classes) {
-            if (!type.isAssignableFrom(clazz)) {
+            if (type != null && !type.isAssignableFrom(clazz)) {
                 continue;
             }
             File folder = getFolder(clazz, annotation);
             if (folder != null) {
                 register(folder, (Class<T>) clazz);
-                return;
+                continue;
             }
             try {
                 T element = (T) clazz.getDeclaredConstructor().newInstance();

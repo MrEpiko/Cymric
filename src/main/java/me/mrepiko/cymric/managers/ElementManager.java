@@ -3,6 +3,7 @@ package me.mrepiko.cymric.managers;
 import me.mrepiko.cymric.elements.plain.BotElement;
 import me.mrepiko.cymric.elements.plain.Reloadable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -14,7 +15,7 @@ public interface ElementManager<T extends BotElement> extends Reloadable {
 
     void register();
 
-    void register(@NotNull Class<? extends Annotation> annotation, @NotNull Class<? extends T> type);
+    void register(@NotNull Class<? extends Annotation> annotation, @Nullable Class<? extends T> type);
 
     // All elements within provided dir will have functionality of the provided type.
     <F extends T> void register(@NotNull File dir, @NotNull Class<F> type);
