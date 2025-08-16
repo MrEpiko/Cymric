@@ -162,7 +162,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
                     CommandHolder.class
             );
             if (holder == null) {
-                throw new IllegalArgumentException("Command with full name " + command.getFullCommandName() + " not found in registered commands.");
+                throw new IllegalArgumentException("Command with full folderPath " + command.getFullCommandName() + " not found in registered commands.");
             }
             handleChildrenRegistration(holder, command);
             holder.setDiscordCommand(command);
@@ -201,14 +201,6 @@ public class CommandManagerImpl extends GenericElementManager<CommandHolder<?>> 
         for (Class<? extends CommandHolder<?>> type : commandTypes) {
             register(CymricCommand.class, type);
         }
-        register(
-                setupDirectory(Constants.RESPONSE_CHAT_COMMAND_CONFIGURATION_FOLDER_PATH),
-                ResponseChatCommand.class
-        );
-        register(
-                setupDirectory(Constants.PARENT_CHAT_COMMAND_CONFIGURATION_FOLDER_PATH),
-                ParentChatCommand.class
-        );
         formCommandFamilyTree();
     }
 

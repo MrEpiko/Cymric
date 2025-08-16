@@ -2,16 +2,19 @@ package me.mrepiko.cymric.managers;
 
 import me.mrepiko.cymric.CymricApi;
 import me.mrepiko.cymric.DiscordBot;
+import me.mrepiko.cymric.annotations.elements.CymricCommand;
 import me.mrepiko.cymric.elements.plain.BotElement;
 import me.mrepiko.cymric.elements.plain.Reloadable;
 import me.mrepiko.cymric.elements.plain.SerializableBotElement;
 import me.mrepiko.cymric.mics.Utils;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,11 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
         for (Class<?> clazz : classes) {
             if (!type.isAssignableFrom(clazz)) {
                 continue;
+            }
+            File folder = getFolder(clazz, annotation);
+            if (folder != null) {
+                register(folder, (Class<T>) clazz);
+                return;
             }
             try {
                 T element = (T) clazz.getDeclaredConstructor().newInstance();
@@ -115,4 +123,30 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
             }
         }
     }
+
+    @Nullable
+    private File getFolder(@NotNull Class<?> clazz, @NotNull Class<? extends Annotation> annotationClass) {
+        for (Method method : annotationClass.getMethods()) {
+            if (!method.getName().equals("folderPath") || method.getParameterCount() != 0 || method.getReturnType() != String.class) {
+                continue;
+            }
+            try {
+                Annotation annotation = clazz.getAnnotation(annotationClass);
+                if (annotation == null) {
+                    return null;
+                }
+                String folderPath = (String) method.invoke(annotation);
+                if (folderPath == null || folderPath.isEmpty()) {
+                    return null;
+                }
+                return Utils.getAndCreateIfNotExists(folderPath, true);
+            } catch (ReflectiveOperationException e) {
+                DiscordBot.getLogger().error("Failed to get folder path from annotation: {}", annotationClass.getName(), e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
 }
