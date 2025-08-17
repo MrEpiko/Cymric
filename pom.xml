@@ -71,7 +71,7 @@
 
         <dependency>
             <groupId>me.mrepiko</groupId>
-            <artifactId>OkHttpWrapper</artifactId>
+            <artifactId>Eucalyptus</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
