@@ -13,4 +13,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CymricCommand {
     String folderPath() default "";
+    String moduleId() default "";
 }
