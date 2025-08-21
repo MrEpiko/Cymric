@@ -421,7 +421,11 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
             return;
         }
 
-        event.replyChoices(option.getChoices()).queue();
+        event.replyChoices(option.getChoices()
+                .stream()
+                .filter(x -> x.getName().startsWith(event.getFocusedOption().getValue()))
+                .toList()
+        ).queue();
     }
 
     // Other
