@@ -17,6 +17,7 @@ import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.elements.command.chat.ChatCommandType;
 import me.mrepiko.cymric.elements.command.chat.CommandFunctionalityType;
 import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
+import me.mrepiko.cymric.elements.command.chat.data.ChatCommandOptionData;
 import me.mrepiko.cymric.elements.command.chat.data.ForgedChatCommandData;
 import me.mrepiko.cymric.elements.command.chat.subtypes.ParentChatCommand;
 import me.mrepiko.cymric.elements.command.contextual.GenericContextualCommand;
@@ -36,7 +37,6 @@ import net.dv8tion.jda.api.events.interaction.command.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -416,12 +416,22 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
                 .build();
 
         ForgedChatCommandData data = slashCommand.getData();
-        OptionData option = data.getAssembledOption(event.getFocusedOption().getName(), map);
-        if (option == null) {
+        ChatCommandOptionData optionData = null;
+        for (ChatCommandOptionData option : data.getOptions()) {
+            if (!option.getName().equalsIgnoreCase(event.getFocusedOption().getName())) {
+                continue;
+            }
+            optionData = option;
+        }
+        if (optionData == null || !optionData.isAutocomplete() ) {
+            return;
+        }
+        List<Command.Choice> assembledChoices = optionData.getAssembledChoices(map);
+        if (assembledChoices == null || assembledChoices.isEmpty()) {
             return;
         }
 
-        event.replyChoices(option.getChoices()
+        event.replyChoices(assembledChoices
                 .stream()
                 .filter(x -> x.getName().startsWith(event.getFocusedOption().getValue()))
                 .toList()
