@@ -3,8 +3,6 @@ package me.mrepiko.cymric;
 import lombok.Getter;
 import me.mrepiko.cymric.config.defaultobject.DefaultObjectConfig;
 import me.mrepiko.cymric.config.main.CymricConfig;
-import me.mrepiko.cymric.elements.tasks.GenericTask;
-import me.mrepiko.cymric.elements.tasks.cacheable.GenericCacheableTask;
 import me.mrepiko.cymric.managers.*;
 import me.mrepiko.cymric.managers.impl.*;
 import me.mrepiko.cymric.mics.EventWaiter;
@@ -122,21 +120,15 @@ public class DiscordBot extends ListenerAdapter implements CymricApi {
 
     @Override
     public void reboot() {
-        logger.info("Rebooting the bot...");
+        logger.info("Rebooting the bot in 5 seconds...");
         // Run all cacheable tasks to make sure they are synced with database (if present)
-        for (GenericTask task : taskManager.getRegistered()) {
-            if (!(task instanceof GenericCacheableTask<?,?>)) {
-                continue;
-            }
-            task.stop();
-            task.run();
-        }
+        taskManager.reboot();
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 System.exit(0);
             }
-        }, 1000L * 10);
+        }, 1000L * 5);
     }
 
     private void startCommandScanner() {

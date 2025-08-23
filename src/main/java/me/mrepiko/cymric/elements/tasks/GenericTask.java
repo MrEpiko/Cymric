@@ -15,22 +15,25 @@ public abstract class GenericTask implements Task {
     private final double period;
     private final TimeUnit timeUnit;
     private final TaskType type;
+    private final boolean callUponReboot;
 
     @Setter
     private long startedAtTimestamp;
     @Setter
     private ScheduledFuture<?> future;
 
-    public GenericTask(@NotNull String id, double interval, double period, @NotNull TimeUnit timeUnit) {
+    public GenericTask(@NotNull String id, double interval, double period, boolean callUponReboot, @NotNull TimeUnit timeUnit) {
         this.id = id;
         this.interval = interval;
+        this.callUponReboot = callUponReboot;
         this.timeUnit = timeUnit;
         this.period = period;
         this.type = TaskType.REPEATING;
     }
 
-    public GenericTask(@NotNull String id, double interval, @NotNull TimeUnit timeUnit) {
+    public GenericTask(@NotNull String id, double interval, boolean callUponReboot, @NotNull TimeUnit timeUnit) {
         this.id = id;
+        this.callUponReboot = callUponReboot;
         this.interval = interval;
         this.timeUnit = timeUnit;
         this.period = 0;

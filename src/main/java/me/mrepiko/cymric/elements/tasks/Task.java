@@ -17,6 +17,8 @@ public interface Task extends Runnable, BotElement {
     @NotNull
     TaskType getType();
 
+    boolean isCallUponReboot();
+
     long getStartedAtTimestamp();
 
     @NotNull
