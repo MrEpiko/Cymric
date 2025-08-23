@@ -52,7 +52,7 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
                 continue;
             }
 
-            if (isModuleEnabled(clazz, annotation)) {
+            if (!isModuleEnabled(clazz, annotation)) {
                 continue;
             }
 
