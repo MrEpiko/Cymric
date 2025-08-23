@@ -165,7 +165,7 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
                 Utils.applyPlaceholders(map, data.getDescription())
         );
 
-        List<OptionData> assembledOptions = getAssembledOptions(map);
+        List<OptionData> assembledOptions = data.getAssembledOptions(map);
         if (assembledOptions != null) {
             subcommandData.addOptions(assembledOptions);
         }
