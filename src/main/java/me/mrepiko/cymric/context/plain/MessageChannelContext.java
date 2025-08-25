@@ -13,15 +13,6 @@ public interface MessageChannelContext extends Context {
     @NotNull
     MessageChannel getMessageChannel();
 
-//    @NotNull
-//    default MessageChannelUnion getMessageChannelUnion() {
-//        if (getMessageChannel() instanceof MessageChannelUnion messageChannelUnion) {
-//            return messageChannelUnion;
-//        } else {
-//            throw new IllegalStateException("This context does not have a MessageChannelUnion.");
-//        }
-//    }
-
     @NotNull
     default GuildMessageChannel getGuildMessageChannel() {
         MessageChannel messageChannel = getMessageChannel();

@@ -440,6 +440,13 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     // Other
 
+    @Override
+    public void reload() {
+        super.reload();
+        formCommandFamilyTree();
+        validateFamilyTree();
+    }
+
     private void handleDeferring(@NotNull CommandInteraction interaction, @NotNull DeferType deferType) {
         switch (deferType) {
             case ENDURING, EDIT -> interaction.deferReply().queue();
