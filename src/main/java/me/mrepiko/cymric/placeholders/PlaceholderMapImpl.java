@@ -54,7 +54,8 @@ public class PlaceholderMapImpl implements PlaceholderMap {
                 if (discordCommand == null) {
                     continue;
                 }
-                put("cmd_", discordCommand);
+                String name = holder.getFullName().replace(" ", "_").toLowerCase();
+                put("cmd_" + name, discordCommand);
             }
         }
         if (map != null) {
@@ -246,7 +247,7 @@ public class PlaceholderMapImpl implements PlaceholderMap {
         String discordId = command.getId();
         put(identifier + "_discord_id", discordId);
         put(identifier + "_id", command.getId());
-        put(identifier + "_mention", "<#" + discordId + ">");
+        put(identifier + "_mention", command.getAsMention());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package me.mrepiko.cymric.elements.command.chat;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.mrepiko.cymric.context.commands.ChatCommandContext;
 import me.mrepiko.cymric.elements.ElementError;
 import me.mrepiko.cymric.elements.command.CommandLoader;
@@ -11,12 +12,18 @@ import me.mrepiko.cymric.response.ResponseBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public abstract class GenericChatCommand extends CommandLoader<ForgedChatCommandData> implements ChatCommandTemplate {
 
     private final CommandFunctionalityType type;
+
+    @Setter
+    private GenericChatCommand parentCommand;
+    @Setter
+    private List<GenericChatCommand> childrenCommands = new ArrayList<>();
 
     public GenericChatCommand(@NotNull String id) {
         this(id, CommandFunctionalityType.NORMAL);
@@ -49,19 +56,19 @@ public abstract class GenericChatCommand extends CommandLoader<ForgedChatCommand
     @NotNull
     @Override
     public List<JdaCommandData> getJdaCommandData(@Nullable PlaceholderMap map) {
-        return data.getCommandData(map);
+        return data.getCommandData(this, map);
     }
 
     @NotNull
     @Override
     public String getFullName() {
-        return data.getFullName();
+        return data.getFullName(this);
     }
 
     @Override
     public void onIncorrectUsage(@NotNull ChatCommandContext context) {
         PlaceholderMap map = context.getPlaceholderMap();
-        map.put("usage", data.getUsage());
+        map.put("usage", data.getUsage(this));
         map.put("arg_explanation", data.getArgExplanation());
         ResponseBuilder.create(map, getErrorResponseData(ElementError.INVALID_ARGS)).buildAndSend();
     }

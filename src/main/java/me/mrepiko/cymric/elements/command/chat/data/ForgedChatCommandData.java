@@ -1,6 +1,5 @@
 package me.mrepiko.cymric.elements.command.chat.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,10 +9,10 @@ import lombok.experimental.Delegate;
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.annotations.SupportsDefaultOverriding;
 import me.mrepiko.cymric.config.main.CymricConfig;
-import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
+import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
 import me.mrepiko.cymric.elements.command.data.CommandData;
 import me.mrepiko.cymric.elements.command.data.JdaCommandData;
-import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
+import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
 import me.mrepiko.cymric.elements.data.ConditionalData;
 import me.mrepiko.cymric.elements.data.DeferrableElementData;
 import me.mrepiko.cymric.elements.data.ElementData;
@@ -38,12 +37,6 @@ import java.util.List;
 @SupportsDefaultOverriding
 public class ForgedChatCommandData implements ConditionalDataContainer {
 
-    @JsonIgnore
-    private GenericChatCommand parentCommand;
-
-    @JsonIgnore
-    private List<GenericChatCommand> childrenCommands = new ArrayList<>();
-
     @JsonUnwrapped
     @Delegate
     private ChatCommandData chatCommandData = new ChatCommandData();
@@ -65,23 +58,23 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     private DeferrableElementData deferrableElementData = new DeferrableElementData();
 
     @NotNull
-    public List<JdaCommandData> getCommandData(@Nullable PlaceholderMap map) {
+    public List<JdaCommandData> getCommandData(@NotNull GenericChatCommand command, @Nullable PlaceholderMap map) {
         List<String> names = commandData.getAllNames(getName(), map);
         List<JdaCommandData> dataList = new ArrayList<>();
 
         for (String name : names) {
-            dataList.add(getCommandData(name, map));
+            dataList.add(getCommandData(command, name, map));
         }
 
         return dataList;
     }
 
     @NotNull
-    private JdaCommandData getCommandData(@NotNull String name, @Nullable PlaceholderMap map) {
+    private JdaCommandData getCommandData(@NotNull GenericChatCommand command, @NotNull String name, @Nullable PlaceholderMap map) {
         if (name.length() > 32) {
             throw new IllegalArgumentException("Command name '" + name + "' exceeds the maximum length of 32 characters.");
         }
-        if (parentCommand != null) {
+        if (command.getParentCommand() != null) {
             throw new IllegalStateException("Cannot create command data for a child command.");
         }
 
@@ -97,18 +90,21 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
             data.getAsSlashCommandData().addOptions(assembledOptions);
         }
 
-        for (GenericChatCommand child : getChildrenCommands()) {
-            List<GenericChatCommand> grandchildren = child.getData().getChildrenCommands();
-            if (grandchildren != null && !grandchildren.isEmpty()) { // Parent has grandchildren, so it's a subcommand group.
-                data.getAsSlashCommandData().addSubcommandGroups(
-                        getSubcommandGroupData(child, map)
+        List<GenericChatCommand> childrenCommands = command.getChildrenCommands();
+        if (childrenCommands != null) {
+            for (GenericChatCommand child : childrenCommands) {
+                List<GenericChatCommand> grandchildren = child.getChildrenCommands();
+                if (grandchildren != null && !grandchildren.isEmpty()) { // Parent has grandchildren, so it's a subcommand group.
+                    data.getAsSlashCommandData().addSubcommandGroups(
+                            getSubcommandGroupData(child, map)
+                    );
+                    continue;
+                }
+                // Otherwise, it's a subcommand.
+                data.getAsSlashCommandData().addSubcommands(
+                        getSubcommandData(child, map)
                 );
-                continue;
             }
-            // Otherwise, it's a subcommand.
-            data.getAsSlashCommandData().addSubcommands(
-                    getSubcommandData(child, map)
-            );
         }
 
         commandData.syncCommandData(data, conditionalData);
@@ -151,8 +147,11 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
                 Utils.applyPlaceholders(map, data.getName()),
                 Utils.applyPlaceholders(map, data.getDescription())
         );
-        for (GenericChatCommand child : data.getChildrenCommands()) {
-            groupData.addSubcommands(getSubcommandData(child, map));
+        List<GenericChatCommand> childrenCommands = command.getChildrenCommands();
+        if (childrenCommands != null) {
+            for (GenericChatCommand child : childrenCommands) {
+                groupData.addSubcommands(getSubcommandData(child, map));
+            }
         }
         return groupData;
     }
@@ -174,12 +173,12 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
     @NotNull
-    public String getFullName() {
+    public String getFullName(@NotNull GenericChatCommand command) {
         String name = elementData.getName();
-        GenericChatCommand parent = parentCommand;
+        GenericChatCommand parent = command.getParentCommand();
         if (parent != null) {
             name = parent.getData().getName() + " " + name;
-            GenericChatCommand grandparent = parent.getData().getParentCommand();
+            GenericChatCommand grandparent = parent.getParentCommand();
             if (grandparent != null) {
                 name = grandparent.getData().getName() + " " + name;
             }
@@ -188,11 +187,11 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
     @NotNull
-    public String getUsage() {
+    public String getUsage(@NotNull GenericChatCommand command) {
         List<ChatCommandOptionData> options = chatCommandData.getOptions();
         String prefix = DiscordBot.getInstance().getConfig().getPrefix();
 
-        StringBuilder usage = new StringBuilder(prefix).append(getFullName());
+        StringBuilder usage = new StringBuilder(prefix).append(getFullName(command));
         for (ChatCommandOptionData option : options) {
             if (option.isRequired()) {
                 usage.append(" <").append(option.getName()).append(">");

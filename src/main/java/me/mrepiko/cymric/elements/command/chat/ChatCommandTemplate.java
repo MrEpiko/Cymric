@@ -2,8 +2,22 @@ package me.mrepiko.cymric.elements.command.chat;
 
 import me.mrepiko.cymric.context.commands.ChatCommandContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface ChatCommandTemplate {
+
+    @Nullable
+    GenericChatCommand getParentCommand();
+
+    void setParentCommand(@Nullable GenericChatCommand parentCommand);
+
+    @Nullable
+    List<GenericChatCommand> getChildrenCommands();
+
+    void setChildrenCommands(@Nullable List<GenericChatCommand> childrenCommands);
+
     void onInteraction(@NotNull ChatCommandContext context);
 
     /**
