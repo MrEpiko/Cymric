@@ -3,6 +3,7 @@ package me.mrepiko.cymric.config.defaultobject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import me.mrepiko.cymric.CymricApi;
@@ -134,7 +135,7 @@ public class DefaultObjectConfig implements Configurable {
                 if (!actualType.isInstance(value)) {
                     newValue = instantiateAndInitialize(actualType);
                     // Convert to ObjectNode if needed
-                    if (fieldType.equals(com.fasterxml.jackson.databind.node.ObjectNode.class) && !fieldType.isInstance(newValue)) {
+                    if (fieldType.equals(ObjectNode.class) && !fieldType.isInstance(newValue)) {
                         newValue = JacksonUtils.getDefaultMapper().valueToTree(newValue);
                     }
                     field.set(instance, newValue);
@@ -143,7 +144,7 @@ public class DefaultObjectConfig implements Configurable {
                 }
             } else {
                 newValue = instantiateAndInitialize(actualType);
-                if (fieldType.equals(com.fasterxml.jackson.databind.node.ObjectNode.class) && !fieldType.isInstance(newValue)) {
+                if (fieldType.equals(ObjectNode.class) && !fieldType.isInstance(newValue)) {
                     newValue = JacksonUtils.getDefaultMapper().valueToTree(newValue);
                 }
                 field.set(instance, newValue);

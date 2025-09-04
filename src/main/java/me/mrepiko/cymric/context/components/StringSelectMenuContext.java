@@ -1,5 +1,6 @@
 package me.mrepiko.cymric.context.components;
 
+import me.mrepiko.cymric.elements.components.selectmenus.stringselect.StringSelectMenuHandler;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
@@ -13,6 +14,9 @@ public interface StringSelectMenuContext extends ComponentContext {
 
     @NotNull
     StringSelectInteraction getStringSelectInteraction();
+
+    @NotNull
+    StringSelectMenuHandler getStringSelectMenuHandler();
 
     @NotNull
     StringSelectMenu getStringSelectMenu();

@@ -1,6 +1,8 @@
 package me.mrepiko.cymric.context.modal;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.managers.runtime.RuntimeModal;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -15,28 +17,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @AllArgsConstructor
+@Getter
 public class ModalContextImpl implements ModalContext {
 
     private final ModalInteractionEvent event;
     private final Modal modal;
+    private final ModalHandler modalHandler;
     private final RuntimeModal runtimeModal;
-
-    @NotNull
-    @Override
-    public ModalInteractionEvent getEvent() {
-        return event;
-    }
 
     @NotNull
     @Override
     public ModalInteraction getInteraction() {
         return event.getInteraction();
-    }
-
-    @NotNull
-    @Override
-    public Modal getModal() {
-        return modal;
     }
 
     @Nullable
@@ -53,12 +45,6 @@ public class ModalContextImpl implements ModalContext {
     @Override
     public Message getMessage() {
         return event.getMessage();
-    }
-
-    @NotNull
-    @Override
-    public RuntimeModal getRuntimeModal() {
-        return runtimeModal;
     }
 
     @NotNull

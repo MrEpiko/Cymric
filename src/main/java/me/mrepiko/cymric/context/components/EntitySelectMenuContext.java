@@ -1,5 +1,6 @@
 package me.mrepiko.cymric.context.components;
 
+import me.mrepiko.cymric.elements.components.selectmenus.entityselect.EntitySelectMenuHandler;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectInteraction;
@@ -14,6 +15,9 @@ public interface EntitySelectMenuContext extends ComponentContext {
 
     @NotNull
     EntitySelectInteraction getInteraction();
+
+    @NotNull
+    EntitySelectMenuHandler getEntitySelectMenuHandler();
 
     @NotNull
     EntitySelectMenu getEntitySelectMenu();

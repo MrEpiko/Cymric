@@ -6,7 +6,7 @@ import lombok.Setter;
 import me.mrepiko.cymric.CymricApi;
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.config.ConfigFile;
-import me.mrepiko.cymric.elements.tasks.GenericTask;
+import me.mrepiko.cymric.elements.tasks.Task;
 import me.mrepiko.cymric.jackson.JacksonUtils;
 import me.mrepiko.cymric.jackson.JsonContainer;
 import me.mrepiko.cymric.mics.Constants;
@@ -32,7 +32,7 @@ public abstract class GenericModule implements Module {
     private boolean enabled = false;
 
     private final List<ListenerAdapter> listeners = new ArrayList<>();
-    private final List<GenericTask> tasks = new ArrayList<>();
+    private final List<Task> tasks = new ArrayList<>();
 
     @Getter
     @Nullable
@@ -60,13 +60,13 @@ public abstract class GenericModule implements Module {
     }
 
     @Override
-    public void registerTask(@NotNull GenericTask task) {
+    public void registerTask(@NotNull Task task) {
         tasks.add(task);
         instance.getTaskManager().register(task);
     }
 
     @Override
-    public void registerAndStartTask(@NotNull GenericTask task) {
+    public void registerAndStartTask(@NotNull Task task) {
         registerTask(task);
         task.run();
     }

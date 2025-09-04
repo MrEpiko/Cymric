@@ -6,9 +6,9 @@ import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.context.components.ComponentContext;
 import me.mrepiko.cymric.context.modal.ModalContext;
 import me.mrepiko.cymric.elements.components.ComponentLoader;
-import me.mrepiko.cymric.elements.components.selectmenus.stringselect.GenericStringSelectMenu;
+import me.mrepiko.cymric.elements.components.selectmenus.stringselect.StringSelectMenuHandler;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.data.StringSelectMenuOptionData;
-import me.mrepiko.cymric.elements.modal.ModalTemplate;
+import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.jackson.JsonContainer;
 import me.mrepiko.cymric.managers.runtime.RuntimeExtra;
 import me.mrepiko.cymric.mics.Utils;
@@ -46,7 +46,7 @@ public class ResponseBuilder {
     private final RuntimeExtra runtimeExtra = new RuntimeExtra();
 
     private final Map<Class<? extends ComponentLoader<?>>, Consumer<ComponentContext>> componentInteractionOverrides = new HashMap<>();
-    private final Map<Class<? extends ModalTemplate>, Consumer<ModalContext>> modalInteractionOverrides = new HashMap<>();
+    private final Map<Class<? extends ModalHandler>, Consumer<ModalContext>> modalInteractionOverrides = new HashMap<>();
 
     private ResponseBuilder(PlaceholderMap map, @Nullable Action action, @Nullable ResponseChain responseChain) {
         this.map = map;
@@ -101,7 +101,7 @@ public class ResponseBuilder {
         return this;
     }
 
-    public ResponseBuilder overrideModalInteraction(@NotNull Class<? extends ModalTemplate> clazz, @NotNull Consumer<ModalContext> consumer) {
+    public ResponseBuilder overrideModalInteraction(@NotNull Class<? extends ModalHandler> clazz, @NotNull Consumer<ModalContext> consumer) {
         this.modalInteractionOverrides.put(clazz, consumer);
         return this;
     }
@@ -174,7 +174,7 @@ public class ResponseBuilder {
         return this;
     }
 
-    public ResponseBuilder injectStringSelectMenuOptions(@NotNull Class<? extends GenericStringSelectMenu> clazz, @NotNull List<StringSelectMenuOptionData> options) {
+    public ResponseBuilder injectStringSelectMenuOptions(@NotNull Class<? extends StringSelectMenuHandler> clazz, @NotNull List<StringSelectMenuOptionData> options) {
         if (this.action != null) {
             this.action.injectStringSelectMenuOptions(clazz, options);
         }

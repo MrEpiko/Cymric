@@ -1,6 +1,7 @@
 package me.mrepiko.cymric.context.modal;
 
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
+import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.managers.runtime.RuntimeModal;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -21,6 +22,9 @@ public interface ModalContext extends MessageChannelContext {
 
     @NotNull
     ModalInteraction getInteraction();
+
+    @NotNull
+    ModalHandler getModalHandler();
 
     @Nullable
     Modal getModal();

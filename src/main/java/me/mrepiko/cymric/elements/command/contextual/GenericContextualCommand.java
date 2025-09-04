@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @Getter
-public abstract class GenericContextualCommand extends CommandLoader<ForgedContextualCommandData> implements ContextualCommandTemplate {
+public abstract class GenericContextualCommand extends CommandLoader<ForgedContextualCommandData> implements ContextualCommandHandler {
 
     public GenericContextualCommand(@NotNull String id) {
         super(id, Constants.CONTEXTUAL_COMMAND_CONFIGURATION_FOLDER_PATH);

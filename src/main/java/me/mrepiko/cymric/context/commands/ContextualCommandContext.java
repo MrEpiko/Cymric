@@ -2,6 +2,7 @@ package me.mrepiko.cymric.context.commands;
 
 import me.mrepiko.cymric.context.ReplyCallbackContext;
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
+import me.mrepiko.cymric.elements.command.contextual.ContextualCommandHandler;
 import me.mrepiko.cymric.elements.command.contextual.GenericContextualCommand;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -24,7 +25,7 @@ public interface ContextualCommandContext extends CommandContext, MessageChannel
     Member getSelectedMember();
 
     @NotNull
-    GenericContextualCommand getCommand();
+    ContextualCommandHandler getCommand();
 
     @NotNull
     GenericContextInteractionEvent<?> getEvent();

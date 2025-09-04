@@ -9,10 +9,10 @@ import lombok.experimental.Delegate;
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.annotations.SupportsDefaultOverriding;
 import me.mrepiko.cymric.config.main.CymricConfig;
-import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
+import me.mrepiko.cymric.elements.command.ForgedCommandDataContainer;
+import me.mrepiko.cymric.elements.command.chat.ChatCommandHandler;
 import me.mrepiko.cymric.elements.command.data.CommandData;
 import me.mrepiko.cymric.elements.command.data.JdaCommandData;
-import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
 import me.mrepiko.cymric.elements.data.ConditionalData;
 import me.mrepiko.cymric.elements.data.DeferrableElementData;
 import me.mrepiko.cymric.elements.data.ElementData;
@@ -35,7 +35,7 @@ import java.util.List;
 @Getter
 @Setter
 @SupportsDefaultOverriding
-public class ForgedChatCommandData implements ConditionalDataContainer {
+public class ForgedChatCommandData implements ForgedCommandDataContainer {
 
     @JsonUnwrapped
     @Delegate
@@ -58,7 +58,7 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     private DeferrableElementData deferrableElementData = new DeferrableElementData();
 
     @NotNull
-    public List<JdaCommandData> getCommandData(@NotNull GenericChatCommand command, @Nullable PlaceholderMap map) {
+    public List<JdaCommandData> getCommandData(@NotNull ChatCommandHandler command, @Nullable PlaceholderMap map) {
         List<String> names = commandData.getAllNames(getName(), map);
         List<JdaCommandData> dataList = new ArrayList<>();
 
@@ -70,7 +70,7 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
     @NotNull
-    private JdaCommandData getCommandData(@NotNull GenericChatCommand command, @NotNull String name, @Nullable PlaceholderMap map) {
+    private JdaCommandData getCommandData(@NotNull ChatCommandHandler command, @NotNull String name, @Nullable PlaceholderMap map) {
         if (name.length() > 32) {
             throw new IllegalArgumentException("Command name '" + name + "' exceeds the maximum length of 32 characters.");
         }
@@ -90,10 +90,10 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
             data.getAsSlashCommandData().addOptions(assembledOptions);
         }
 
-        List<GenericChatCommand> childrenCommands = command.getChildrenCommands();
+        List<ChatCommandHandler> childrenCommands = command.getChildrenCommands();
         if (childrenCommands != null) {
-            for (GenericChatCommand child : childrenCommands) {
-                List<GenericChatCommand> grandchildren = child.getChildrenCommands();
+            for (ChatCommandHandler child : childrenCommands) {
+                List<ChatCommandHandler> grandchildren = child.getChildrenCommands();
                 if (grandchildren != null && !grandchildren.isEmpty()) { // Parent has grandchildren, so it's a subcommand group.
                     data.getAsSlashCommandData().addSubcommandGroups(
                             getSubcommandGroupData(child, map)
@@ -141,15 +141,15 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
     @NotNull
-    private SubcommandGroupData getSubcommandGroupData(@NotNull GenericChatCommand command, @Nullable PlaceholderMap map) {
+    private SubcommandGroupData getSubcommandGroupData(@NotNull ChatCommandHandler command, @Nullable PlaceholderMap map) {
         ForgedChatCommandData data = command.getData();
         SubcommandGroupData groupData = new SubcommandGroupData(
                 Utils.applyPlaceholders(map, data.getName()),
                 Utils.applyPlaceholders(map, data.getDescription())
         );
-        List<GenericChatCommand> childrenCommands = command.getChildrenCommands();
+        List<ChatCommandHandler> childrenCommands = command.getChildrenCommands();
         if (childrenCommands != null) {
-            for (GenericChatCommand child : childrenCommands) {
+            for (ChatCommandHandler child : childrenCommands) {
                 groupData.addSubcommands(getSubcommandData(child, map));
             }
         }
@@ -157,7 +157,7 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
     @NotNull
-    public SubcommandData getSubcommandData(@NotNull GenericChatCommand command, @Nullable PlaceholderMap map) {
+    public SubcommandData getSubcommandData(@NotNull ChatCommandHandler command, @Nullable PlaceholderMap map) {
         ForgedChatCommandData data = command.getData();
         SubcommandData subcommandData = new SubcommandData(
                 Utils.applyPlaceholders(map, data.getName()),
@@ -173,12 +173,12 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
     @NotNull
-    public String getFullName(@NotNull GenericChatCommand command) {
+    public String getFullName(@NotNull ChatCommandHandler command) {
         String name = elementData.getName();
-        GenericChatCommand parent = command.getParentCommand();
+        ChatCommandHandler parent = command.getParentCommand();
         if (parent != null) {
             name = parent.getData().getName() + " " + name;
-            GenericChatCommand grandparent = parent.getParentCommand();
+            ChatCommandHandler grandparent = parent.getParentCommand();
             if (grandparent != null) {
                 name = grandparent.getData().getName() + " " + name;
             }
@@ -187,7 +187,7 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
     @NotNull
-    public String getUsage(@NotNull GenericChatCommand command) {
+    public String getUsage(@NotNull ChatCommandHandler command) {
         List<ChatCommandOptionData> options = chatCommandData.getOptions();
         String prefix = DiscordBot.getInstance().getConfig().getPrefix();
 
@@ -233,3 +233,4 @@ public class ForgedChatCommandData implements ConditionalDataContainer {
     }
 
 }
+

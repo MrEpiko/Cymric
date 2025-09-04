@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-public abstract class GenericButton extends ComponentLoader<ForgedButtonData> implements ButtonTemplate {
+public abstract class GenericButton extends ComponentLoader<ForgedButtonData> implements ButtonHandler {
 
     public GenericButton(@NotNull String id) {
         super(id, Constants.BUTTON_CONFIGURATION_FOLDER_PATH);

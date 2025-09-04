@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.mrepiko.cymric.context.commands.PrefixCommandContext;
 import me.mrepiko.cymric.discord.DiscordCache;
-import me.mrepiko.cymric.elements.command.CommandLoader;
-import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
+import me.mrepiko.cymric.elements.command.CommandHandler;
+import me.mrepiko.cymric.elements.command.chat.ChatCommandHandler;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -22,7 +22,7 @@ import java.util.List;
 @Getter
 public class PrefixCommandContextImpl implements PrefixCommandContext {
 
-    private final GenericChatCommand command;
+    private final ChatCommandHandler command;
     private final MessageReceivedEvent event;
     private final List<String> args;
 
@@ -381,9 +381,8 @@ public class PrefixCommandContextImpl implements PrefixCommandContext {
         return defaultValue;
     }
 
-    @NotNull
     @Override
-    public CommandLoader<?> getCommandHolder() {
+    public @NotNull CommandHandler<?> getCommandHandler() {
         return command;
     }
 

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.mrepiko.cymric.context.components.ComponentContext;
 import me.mrepiko.cymric.context.plain.impl.MessageContextImpl;
-import me.mrepiko.cymric.elements.components.ComponentLoader;
+import me.mrepiko.cymric.elements.components.ComponentHandler;
 import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
 import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
 import me.mrepiko.cymric.managers.runtime.RuntimeExtra;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 public class RuntimeComponentImpl implements RuntimeComponent {
 
     private final ActionComponent actionComponent;
-    private final ComponentLoader<?> element;
+    private final ComponentHandler<?> element;
     private final ForgedComponentDataContainer overriddenData;
     private final RuntimeExtra extra = new RuntimeExtra();
 
@@ -39,7 +39,7 @@ public class RuntimeComponentImpl implements RuntimeComponent {
 
     public RuntimeComponentImpl(
             @NotNull User creator,
-            @NotNull ComponentLoader<?> element,
+            @NotNull ComponentHandler<?> element,
             @Nullable ForgedComponentDataContainer overriddenData,
             @NotNull ActionComponent actionComponent,
             @NotNull RuntimeExtra extra,
@@ -70,7 +70,7 @@ public class RuntimeComponentImpl implements RuntimeComponent {
     public void setupTimeout(Message message) {
         this.message = message;
         long timeoutMillis = (overriddenData == null)
-                ? (long) element.getTimeoutableData().getTimeoutMillis()
+                ? (long) element.getData().getTimeoutableElementData().getTimeoutMillis()
                 : (long) overriddenData.getTimeoutableElementData().getTimeoutMillis();
 
         if (timeoutMillis <= 0) {

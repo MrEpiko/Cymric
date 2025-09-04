@@ -1,9 +1,12 @@
 package me.mrepiko.cymric.context.components.impl;
 
 import lombok.AllArgsConstructor;
-import me.mrepiko.cymric.elements.components.ComponentLoader;
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
+import lombok.Getter;
 import me.mrepiko.cymric.context.components.ButtonContext;
+import me.mrepiko.cymric.elements.components.ComponentHandler;
+import me.mrepiko.cymric.elements.components.ComponentLoader;
+import me.mrepiko.cymric.elements.components.button.ButtonHandler;
+import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -17,16 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @AllArgsConstructor
+@Getter
 public class ButtonContextImpl implements ButtonContext {
 
     private final ButtonInteractionEvent event;
+    private final ButtonHandler buttonHandler;
     private final RuntimeComponent runtimeComponent;
-
-    @NotNull
-    @Override
-    public ButtonInteractionEvent getEvent() {
-        return event;
-    }
 
     @NotNull
     @Override
@@ -42,20 +41,13 @@ public class ButtonContextImpl implements ButtonContext {
 
     @NotNull
     @Override
-    public RuntimeComponent getRuntimeComponent() {
-        return runtimeComponent;
-    }
-
-    @NotNull
-    @Override
     public ComponentInteraction getComponentInteraction() {
         return getButtonInteraction();
     }
 
-    @NotNull
     @Override
-    public ComponentLoader<?> getComponentHolder() {
-        return runtimeComponent.getElement();
+    public @NotNull ComponentHandler<?> getComponentHandler() {
+        return buttonHandler;
     }
 
     @NotNull

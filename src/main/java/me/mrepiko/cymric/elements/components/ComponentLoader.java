@@ -9,8 +9,6 @@ import me.mrepiko.cymric.discord.DiscordUtils;
 import me.mrepiko.cymric.elements.ConditionalElementLoader;
 import me.mrepiko.cymric.elements.data.ComponentData;
 import me.mrepiko.cymric.elements.data.TimeoutableElementData;
-import me.mrepiko.cymric.elements.plain.ComponentTemplate;
-import me.mrepiko.cymric.elements.plain.SerializableBotElement;
 import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import me.mrepiko.cymric.response.ResponseBuilder;
@@ -20,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
-public abstract class ComponentLoader<T extends ForgedComponentDataContainer> extends ConditionalElementLoader<T> implements ComponentTemplate, SerializableBotElement<T> {
+public abstract class ComponentLoader<T extends ForgedComponentDataContainer> extends ConditionalElementLoader<T> implements ComponentHandler<T> {
 
     private final CymricApi instance = DiscordBot.getInstance();
 

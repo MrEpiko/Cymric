@@ -3,17 +3,17 @@ package me.mrepiko.cymric.elements.components.selectmenus.stringselect;
 import lombok.Getter;
 import me.mrepiko.cymric.context.components.StringSelectMenuContext;
 import me.mrepiko.cymric.elements.ElementError;
-import me.mrepiko.cymric.elements.components.RowComponent;
 import me.mrepiko.cymric.elements.components.ComponentLoader;
+import me.mrepiko.cymric.elements.components.RowComponent;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.data.ForgedStringSelectMenuData;
-import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import me.mrepiko.cymric.mics.Constants;
 import me.mrepiko.cymric.mics.Utils;
+import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-public abstract class GenericStringSelectMenu extends ComponentLoader<ForgedStringSelectMenuData> implements StringSelectMenuTemplate {
+public abstract class GenericStringSelectMenu extends ComponentLoader<ForgedStringSelectMenuData> implements StringSelectMenuHandler {
 
     public GenericStringSelectMenu(@NotNull String id) {
         super(id, Constants.STRING_SELECT_MENU_CONFIGURATION_FOLDER_PATH);

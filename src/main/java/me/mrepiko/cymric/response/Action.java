@@ -13,14 +13,14 @@ import me.mrepiko.cymric.context.plain.MessageContext;
 import me.mrepiko.cymric.context.plain.impl.MessageChannelContextImpl;
 import me.mrepiko.cymric.context.plain.impl.MessageContextImpl;
 import me.mrepiko.cymric.discord.DiscordCache;
-import me.mrepiko.cymric.elements.components.ComponentLoader;
-import me.mrepiko.cymric.elements.components.button.GenericButton;
+import me.mrepiko.cymric.elements.components.ComponentHandler;
+import me.mrepiko.cymric.elements.components.button.ButtonHandler;
 import me.mrepiko.cymric.elements.components.button.data.ForgedButtonData;
-import me.mrepiko.cymric.elements.components.selectmenus.entityselect.GenericEntitySelectMenu;
-import me.mrepiko.cymric.elements.components.selectmenus.stringselect.GenericStringSelectMenu;
+import me.mrepiko.cymric.elements.components.selectmenus.entityselect.EntitySelectMenuHandler;
+import me.mrepiko.cymric.elements.components.selectmenus.stringselect.StringSelectMenuHandler;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.data.ForgedStringSelectMenuData;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.data.StringSelectMenuOptionData;
-import me.mrepiko.cymric.elements.modal.GenericModal;
+import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.elements.modal.data.ForgedModalData;
 import me.mrepiko.cymric.jackson.JacksonUtils;
 import me.mrepiko.cymric.jackson.JsonContainer;
@@ -68,11 +68,11 @@ public class Action {
     private boolean channelOrMessageProvided = false;
 
     // Class that extends ComponentHolder: Data (ButtonData, StringSelectMenuData, etc.)
-    private final List<Pair<ComponentLoader<?>, Object>> components = new ArrayList<>();
+    private final List<Pair<ComponentHandler<?>, Object>> components = new ArrayList<>();
 
     // Class that extends Modal: ModalData
     @Nullable
-    private Pair<? extends GenericModal, ForgedModalData> modal;
+    private Pair<? extends ModalHandler, ForgedModalData> modal;
 
     public void setMessageChannel(@NotNull MessageChannel messageChannel) {
         this.messageChannel = messageChannel;
@@ -84,27 +84,27 @@ public class Action {
         this.channelOrMessageProvided = true;
     }
 
-    public void setModal(@NotNull Class<? extends GenericModal> clazz, @NotNull ForgedModalData modalData) {
-        GenericModal genericModal = modalManager.getByClass(clazz);
-        this.modal = new Pair<>(genericModal, modalData);
+    public void setModal(@NotNull Class<? extends ModalHandler> clazz, @NotNull ForgedModalData modalData) {
+        ModalHandler modalHandler = modalManager.getByClass(clazz);
+        this.modal = new Pair<>(modalHandler, modalData);
     }
 
-    public void addButton(@NotNull Class<? extends GenericButton> clazz, @NotNull ForgedButtonData data) {
+    public void addButton(@NotNull Class<? extends ButtonHandler> clazz, @NotNull ForgedButtonData data) {
         addComponent(clazz, data);
     }
 
-    public void addStringSelectMenu(@NotNull Class<? extends GenericStringSelectMenu> clazz, @NotNull Object data) {
+    public void addStringSelectMenu(@NotNull Class<? extends StringSelectMenuHandler> clazz, @NotNull Object data) {
         addComponent(clazz, data);
     }
 
-    public void addEntitySelectMenu(@NotNull Class<? extends GenericEntitySelectMenu> clazz, @NotNull Object data) {
+    public void addEntitySelectMenu(@NotNull Class<? extends EntitySelectMenuHandler> clazz, @NotNull Object data) {
         addComponent(clazz, data);
     }
 
-    private void addComponent(@NotNull Class<? extends ComponentLoader<?>> clazz, @NotNull Object data) {
+    private void addComponent(@NotNull Class<? extends ComponentHandler<?>> clazz, @NotNull Object data) {
         ComponentManager componentManager = instance.getComponentManager();
-        ComponentLoader<?> holder = componentManager.getByClass(clazz);
-        this.components.add(new Pair<>(holder, data));
+        ComponentHandler<?> handler = componentManager.getByClass(clazz);
+        this.components.add(new Pair<>(handler, data));
     }
 
     public void injectEmbedFields(int embedIndex, @NotNull List<FieldData> fieldsData) {
@@ -119,10 +119,10 @@ public class Action {
         embedData.setFields(fieldsData);
     }
 
-    public void injectStringSelectMenuOptions(@NotNull Class<? extends GenericStringSelectMenu> clazz, @NotNull List<StringSelectMenuOptionData> options) {
-        ComponentLoader<?> holder = componentManager.getByClass(clazz);
-        for (Pair<ComponentLoader<?>, Object> pair : components) {
-            if (pair.getFirst() != holder) {
+    public void injectStringSelectMenuOptions(@NotNull Class<? extends StringSelectMenuHandler> clazz, @NotNull List<StringSelectMenuOptionData> options) {
+        ComponentHandler<?> handler = componentManager.getByClass(clazz);
+        for (Pair<ComponentHandler<?>, Object> pair : components) {
+            if (pair.getFirst() != handler) {
                 continue;
             }
             ForgedStringSelectMenuData component = (ForgedStringSelectMenuData) pair.getSecond();
@@ -177,10 +177,10 @@ public class Action {
             return;
         }
 
-        GenericModal genericModal = modalManager.getById(id);
+        ModalHandler modalHandler = modalManager.getById(id);
         ForgedModalData deepCopy;
         try {
-            deepCopy = (ForgedModalData) JacksonUtils.deepCopy(genericModal.getData());
+            deepCopy = (ForgedModalData) JacksonUtils.deepCopy(modalHandler.getData());
         } catch (IOException e) {
             throw new RuntimeException("Failed to deep copy modal data", e);
         }
@@ -191,7 +191,7 @@ public class Action {
                 false
         );
 
-        this.modal = new Pair<>(genericModal, deepCopy);
+        this.modal = new Pair<>(modalHandler, deepCopy);
     }
 
     /**
@@ -247,10 +247,10 @@ public class Action {
                 continue;
             }
 
-            ComponentLoader<?> holder = componentManager.getById(id);
+            ComponentHandler<?> handler = componentManager.getById(id);
             F deepCopy;
             try {
-                deepCopy = (F) JacksonUtils.deepCopy(holder.getData());
+                deepCopy = (F) JacksonUtils.deepCopy(handler.getData());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -261,7 +261,7 @@ public class Action {
                     false
             );
 
-            components.add(new Pair<>(holder, deepCopy));
+            components.add(new Pair<>(handler, deepCopy));
         }
     }
 

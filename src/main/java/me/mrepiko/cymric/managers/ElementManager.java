@@ -30,4 +30,7 @@ public interface ElementManager<T extends BotElement> extends Reloadable {
 
     @NotNull
     List<T> getRegistered();
+
+    boolean exists(@NotNull String id);
+
 }

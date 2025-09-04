@@ -3,11 +3,9 @@ package me.mrepiko.cymric.elements.command;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import me.mrepiko.cymric.elements.command.data.CommandData;
 import me.mrepiko.cymric.elements.ConditionalElementLoader;
+import me.mrepiko.cymric.elements.command.data.CommandData;
 import me.mrepiko.cymric.elements.command.data.JdaCommandData;
-import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
-import me.mrepiko.cymric.elements.plain.SerializableBotElement;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @Getter
-public abstract class CommandLoader<T extends ConditionalDataContainer> extends ConditionalElementLoader<T> implements CommandTemplate, SerializableBotElement<T> {
+public abstract class CommandLoader<T extends ForgedCommandDataContainer> extends ConditionalElementLoader<T> implements CommandHandler<T> {
 
     @Setter(AccessLevel.PROTECTED)
     private CommandData commandData;

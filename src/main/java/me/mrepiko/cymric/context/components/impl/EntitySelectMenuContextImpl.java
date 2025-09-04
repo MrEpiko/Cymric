@@ -1,9 +1,11 @@
 package me.mrepiko.cymric.context.components.impl;
 
 import lombok.AllArgsConstructor;
-import me.mrepiko.cymric.elements.components.ComponentLoader;
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
+import lombok.Getter;
 import me.mrepiko.cymric.context.components.EntitySelectMenuContext;
+import me.mrepiko.cymric.elements.components.ComponentHandler;
+import me.mrepiko.cymric.elements.components.selectmenus.entityselect.EntitySelectMenuHandler;
+import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
@@ -16,16 +18,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @AllArgsConstructor
+@Getter
 public class EntitySelectMenuContextImpl implements EntitySelectMenuContext {
 
     private final EntitySelectInteractionEvent event;
+    private final EntitySelectMenuHandler entitySelectMenuHandler;
     private final RuntimeComponent runtimeComponent;
-
-    @NotNull
-    @Override
-    public EntitySelectInteractionEvent getEvent() {
-        return event;
-    }
 
     @NotNull
     @Override
@@ -47,20 +45,13 @@ public class EntitySelectMenuContextImpl implements EntitySelectMenuContext {
 
     @NotNull
     @Override
-    public RuntimeComponent getRuntimeComponent() {
-        return runtimeComponent;
-    }
-
-    @NotNull
-    @Override
     public ComponentInteraction getComponentInteraction() {
         return getInteraction();
     }
 
-    @NotNull
     @Override
-    public ComponentLoader<?> getComponentHolder() {
-        return runtimeComponent.getElement();
+    public @NotNull ComponentHandler<?> getComponentHandler() {
+        return entitySelectMenuHandler;
     }
 
     @NotNull

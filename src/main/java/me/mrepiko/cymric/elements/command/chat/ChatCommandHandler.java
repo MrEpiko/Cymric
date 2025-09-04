@@ -1,22 +1,25 @@
 package me.mrepiko.cymric.elements.command.chat;
 
 import me.mrepiko.cymric.context.commands.ChatCommandContext;
+import me.mrepiko.cymric.elements.command.CommandHandler;
+import me.mrepiko.cymric.elements.command.chat.data.ForgedChatCommandData;
+import me.mrepiko.cymric.elements.containers.ElementDataContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface ChatCommandTemplate {
+public interface ChatCommandHandler extends CommandHandler<ForgedChatCommandData> {
 
     @Nullable
-    GenericChatCommand getParentCommand();
+    ChatCommandHandler getParentCommand();
 
-    void setParentCommand(@Nullable GenericChatCommand parentCommand);
+    void setParentCommand(@Nullable ChatCommandHandler parentCommand);
 
     @Nullable
-    List<GenericChatCommand> getChildrenCommands();
+    List<ChatCommandHandler> getChildrenCommands();
 
-    void setChildrenCommands(@Nullable List<GenericChatCommand> childrenCommands);
+    void setChildrenCommands(@Nullable List<ChatCommandHandler> childrenCommands);
 
     void onInteraction(@NotNull ChatCommandContext context);
 
@@ -32,3 +35,4 @@ public interface ChatCommandTemplate {
     @NotNull
     CommandFunctionalityType getType();
 }
+

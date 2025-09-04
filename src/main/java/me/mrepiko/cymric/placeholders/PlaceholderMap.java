@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,8 @@ public interface PlaceholderMap {
     void put(@NotNull String identifier, @NotNull Command command);
 
     void put(@NotNull String identifier, @Nullable List<?> list, @NotNull ListStyle style, @NotNull String defaultValue);
+
+    void put(@NotNull String identifier, @NotNull Timestamp timestamp);
 
     default void put(@NotNull String identifier, @NotNull Placeholderable placeholderable) {
         placeholderable.appendToPlaceholderMap(identifier, this);

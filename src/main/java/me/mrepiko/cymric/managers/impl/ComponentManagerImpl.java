@@ -11,13 +11,13 @@ import me.mrepiko.cymric.context.components.impl.EntitySelectMenuContextImpl;
 import me.mrepiko.cymric.context.components.impl.StringSelectMenuContextImpl;
 import me.mrepiko.cymric.discord.DiscordUtils;
 import me.mrepiko.cymric.elements.DeferType;
-import me.mrepiko.cymric.elements.components.ComponentLoader;
+import me.mrepiko.cymric.elements.components.ComponentHandler;
 import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
-import me.mrepiko.cymric.elements.components.button.GenericButton;
+import me.mrepiko.cymric.elements.components.button.ButtonHandler;
 import me.mrepiko.cymric.elements.components.button.data.ForgedButtonData;
-import me.mrepiko.cymric.elements.components.selectmenus.entityselect.GenericEntitySelectMenu;
+import me.mrepiko.cymric.elements.components.selectmenus.entityselect.EntitySelectMenuHandler;
 import me.mrepiko.cymric.elements.components.selectmenus.entityselect.data.ForgedEntitySelectMenuData;
-import me.mrepiko.cymric.elements.components.selectmenus.stringselect.GenericStringSelectMenu;
+import me.mrepiko.cymric.elements.components.selectmenus.stringselect.StringSelectMenuHandler;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.data.ForgedStringSelectMenuData;
 import me.mrepiko.cymric.elements.data.ComponentData;
 import me.mrepiko.cymric.managers.ComponentManager;
@@ -37,9 +37,12 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<?>> implements ComponentManager {
+public class ComponentManagerImpl extends GenericElementManager<ComponentHandler<?>> implements ComponentManager {
 
     // Unique element ID: RuntimeComponent
     // ID above refers to element ID with mix of characters at the end
@@ -51,10 +54,10 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
             Constants.ENTITY_SELECT_MENU_CONFIGURATION_FOLDER_PATH
     );
 
-    private final List<Class<? extends ComponentLoader<?>>> componentTypes = List.of(
-            GenericButton.class,
-            GenericStringSelectMenu.class,
-            GenericEntitySelectMenu.class
+    private final List<Class<? extends ComponentHandler<?>>> componentTypes = List.of(
+            ButtonHandler.class,
+            StringSelectMenuHandler.class,
+            EntitySelectMenuHandler.class
     );
 
     public ComponentManagerImpl() {
@@ -85,13 +88,13 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
         return components;
     }
 
-    private RuntimeComponent createRuntimeComponent(@Nullable RuntimeComponent runtimeComponent, @NotNull User creator, @NotNull ComponentLoader<?> componentHolder, @NotNull ForgedComponentDataContainer overriddenData, @NotNull ActionComponent actionComponent) {
+    private RuntimeComponent createRuntimeComponent(@Nullable RuntimeComponent runtimeComponent, @NotNull User creator, @NotNull ComponentHandler<?> componentHandler, @NotNull ForgedComponentDataContainer overriddenData, @NotNull ActionComponent actionComponent) {
         if (runtimeComponent != null) {
             return runtimeComponent;
         }
         return new RuntimeComponentImpl(
                 creator,
-                componentHolder,
+                componentHandler,
                 overriddenData,
                 actionComponent,
                 new RuntimeExtra(),
@@ -104,7 +107,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
         for (String path : DIRECTORY_PATHS) {
             setupDirectory(path);
         }
-        for (Class<? extends ComponentLoader<?>> type : componentTypes) {
+        for (Class<? extends ComponentHandler<?>> type : componentTypes) {
             register(CymricComponent.class, type);
         }
     }
@@ -116,24 +119,24 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
         String uniqueComponentId = event.getComponentId();
         String sanitizedComponentId = Utils.getSanitizedComponentId(uniqueComponentId);
 
-        GenericButton genericButton = (GenericButton) getById(sanitizedComponentId);
+        ButtonHandler buttonHandler = (ButtonHandler) getById(sanitizedComponentId);
         RuntimeComponent runtimeComponent = getRuntimeComponent(uniqueComponentId);
-        ForgedButtonData data = runtimeComponent == null ? genericButton.getData() : (ForgedButtonData) runtimeComponent.getOverriddenData();
+        ForgedButtonData data = runtimeComponent == null ? buttonHandler.getData() : (ForgedButtonData) runtimeComponent.getOverriddenData();
 
         runtimeComponent = createRuntimeComponent(
                 runtimeComponent,
                 event.getUser(),
-                genericButton,
+                buttonHandler,
                 data,
                 event.getButton()
         );
 
-        ButtonContext context = new ButtonContextImpl(event, runtimeComponent);
-        if (!handleComponentInteraction(event, genericButton, data, context, runtimeComponent)) {
+        ButtonContext context = new ButtonContextImpl(event, buttonHandler, runtimeComponent);
+        if (!handleComponentInteraction(event, buttonHandler, data, context, runtimeComponent)) {
             return;
         }
 
-        genericButton.onInteraction(context);
+        buttonHandler.onInteraction(context);
     }
 
     @Override
@@ -141,24 +144,24 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
         String uniqueComponentId = event.getComponentId();
         String sanitizedComponentId = Utils.getSanitizedComponentId(uniqueComponentId);
 
-        GenericStringSelectMenu genericSelectMenu = (GenericStringSelectMenu) getById(sanitizedComponentId);
+        StringSelectMenuHandler selectMenuHandler = (StringSelectMenuHandler) getById(sanitizedComponentId);
         RuntimeComponent runtimeComponent = getRuntimeComponent(uniqueComponentId);
-        ForgedStringSelectMenuData data = (runtimeComponent == null) ? genericSelectMenu.getData() : ((GenericStringSelectMenu) runtimeComponent.getElement()).getData();
+        ForgedStringSelectMenuData data = (runtimeComponent == null) ? selectMenuHandler.getData() : ((StringSelectMenuHandler) runtimeComponent.getElement()).getData();
 
         runtimeComponent = createRuntimeComponent(
                 runtimeComponent,
                 event.getUser(),
-                genericSelectMenu,
+                selectMenuHandler,
                 data,
                 event.getSelectMenu()
         );
 
-        StringSelectMenuContext context = new StringSelectMenuContextImpl(event, runtimeComponent);
-        if (!handleComponentInteraction(event, genericSelectMenu, data, context, runtimeComponent)) {
+        StringSelectMenuContext context = new StringSelectMenuContextImpl(event, selectMenuHandler, runtimeComponent);
+        if (!handleComponentInteraction(event, selectMenuHandler, data, context, runtimeComponent)) {
             return;
         }
 
-        genericSelectMenu.onInteraction(context);
+        selectMenuHandler.onInteraction(context);
     }
 
     @Override
@@ -166,24 +169,24 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
         String uniqueComponentId = event.getComponentId();
         String sanitizedComponentId = Utils.getSanitizedComponentId(uniqueComponentId);
 
-        GenericEntitySelectMenu genericSelectMenu = (GenericEntitySelectMenu) getById(sanitizedComponentId);
+        EntitySelectMenuHandler selectMenuHandler = (EntitySelectMenuHandler) getById(sanitizedComponentId);
         RuntimeComponent runtimeComponent = getRuntimeComponent(uniqueComponentId);
-        ForgedEntitySelectMenuData data = (runtimeComponent == null) ? genericSelectMenu.getData() : ((GenericEntitySelectMenu) runtimeComponent.getElement()).getData();
+        ForgedEntitySelectMenuData data = (runtimeComponent == null) ? selectMenuHandler.getData() : ((EntitySelectMenuHandler) runtimeComponent.getElement()).getData();
 
         runtimeComponent = createRuntimeComponent(
                 runtimeComponent,
                 event.getUser(),
-                genericSelectMenu,
+                selectMenuHandler,
                 data,
                 event.getSelectMenu()
         );
 
-        EntitySelectMenuContext context = new EntitySelectMenuContextImpl(event, runtimeComponent);
-        if (!handleComponentInteraction(event, genericSelectMenu, data, context, runtimeComponent)) {
+        EntitySelectMenuContext context = new EntitySelectMenuContextImpl(event, selectMenuHandler, runtimeComponent);
+        if (!handleComponentInteraction(event, selectMenuHandler, data, context, runtimeComponent)) {
             return;
         }
 
-        genericSelectMenu.onInteraction(context);
+        selectMenuHandler.onInteraction(context);
     }
 
     // Miscellaneous
@@ -191,7 +194,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private <T extends ComponentContext> boolean handleComponentInteraction(
             @NotNull GenericComponentInteractionCreateEvent event,
-            @NotNull ComponentLoader<?> holder,
+            @NotNull ComponentHandler<?> handler,
             @NotNull ForgedComponentDataContainer data,
             @NotNull T context,
             @NotNull RuntimeComponent runtimeComponent
@@ -201,7 +204,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
             return false;
         }
 
-        if (isCreatorInvalid(holder, runtimeComponent, event.getUser()) || !holder.check(context, data.getConditionalData())) {
+        if (isCreatorInvalid(handler, runtimeComponent, event.getUser()) || !handler.check(context, data.getConditionalData())) {
             return false;
         }
 
@@ -211,7 +214,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
             return false;
         }
 
-        holder.setUserCooldown(event.getUser(), data.getConditionalData());
+        handler.setUserCooldown(event.getUser(), data.getConditionalData());
         ComponentData componentData = data.getComponentData();
         DiscordUtils.handleComponentDisabling(
                 runtimeComponent,
@@ -222,8 +225,8 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentLoader<
         return true;
     }
 
-    private boolean isCreatorInvalid(ComponentLoader<?> holder, @Nullable RuntimeComponent runtimeComponent, User invoker) {
-        if (!holder.getComponentData().isCreatorOnly()) {
+    private boolean isCreatorInvalid(@NotNull ComponentHandler<?> handler, @Nullable RuntimeComponent runtimeComponent, User invoker) {
+        if (!handler.getData().getComponentData().isCreatorOnly()) {
             return false;
         }
         if (runtimeComponent == null) {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Delegate;
 import me.mrepiko.cymric.annotations.SupportsDefaultOverriding;
+import me.mrepiko.cymric.elements.command.ForgedCommandDataContainer;
 import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
 import me.mrepiko.cymric.elements.command.data.CommandData;
 import me.mrepiko.cymric.elements.command.data.JdaCommandData;
@@ -27,7 +28,7 @@ import java.util.List;
 @Getter
 @Setter
 @SupportsDefaultOverriding
-public class ForgedContextualCommandData implements ConditionalDataContainer {
+public class ForgedContextualCommandData implements ForgedCommandDataContainer {
 
     @JsonUnwrapped
     @Delegate

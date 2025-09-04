@@ -2,7 +2,7 @@ package me.mrepiko.cymric.managers;
 
 import me.mrepiko.cymric.CymricApi;
 import me.mrepiko.cymric.DiscordBot;
-import me.mrepiko.cymric.elements.modules.GenericModule;
+import me.mrepiko.cymric.elements.modules.Module;
 import me.mrepiko.cymric.elements.plain.BotElement;
 import me.mrepiko.cymric.elements.plain.Reloadable;
 import me.mrepiko.cymric.elements.plain.SerializableBotElement;
@@ -10,7 +10,6 @@ import me.mrepiko.cymric.mics.Utils;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +24,6 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
 
     // ID: Element
     protected final Map<String, T> elements = new HashMap<>();
-    private final Logger logger = DiscordBot.getLogger();
 
     @NotNull
     @Override
@@ -78,7 +76,7 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
                 F element = type.getDeclaredConstructor(String.class).newInstance(elementId);
                 register(element);
             } catch (ReflectiveOperationException e) {
-                logger.error("Failed to instantiate element class for ID: {}", elementId, e);
+                DiscordBot.getLogger().error("Failed to instantiate element class for ID: {}", elementId, e);
             }
         }
     }
@@ -132,6 +130,11 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
         }
     }
 
+    @Override
+    public boolean exists(@NotNull String id) {
+        return elements.containsKey(id);
+    }
+
     @Nullable
     private File getFolder(@NotNull Class<?> clazz, @NotNull Class<? extends Annotation> annotationClass) {
         for (Method method : annotationClass.getMethods()) {
@@ -149,7 +152,7 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
                 }
                 return Utils.getAndCreateIfNotExists(folderPath, true);
             } catch (ReflectiveOperationException e) {
-                logger.error("Failed to get folder path from annotation: {}", annotationClass.getName(), e);
+                DiscordBot.getLogger().error("Failed to get folder path from annotation: {}", annotationClass.getName(), e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -171,10 +174,10 @@ public abstract class GenericElementManager<T extends BotElement> extends Listen
                 if (moduleId == null || moduleId.isEmpty()) {
                     return true;
                 }
-                GenericModule module = DiscordBot.getInstance().getModuleManager().getById(moduleId);
+                Module module = DiscordBot.getInstance().getModuleManager().getById(moduleId);
                 return module.isEnabled();
             } catch (ReflectiveOperationException e) {
-                logger.error("Failed to get folder path from annotation: {}", annotationClass.getName(), e);
+                DiscordBot.getLogger().error("Failed to get folder path from annotation: {}", annotationClass.getName(), e);
             }
         }
         return true;

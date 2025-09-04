@@ -1,6 +1,7 @@
 package me.mrepiko.cymric.context.commands;
 
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
+import me.mrepiko.cymric.elements.command.chat.ChatCommandHandler;
 import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -9,7 +10,10 @@ import org.jetbrains.annotations.Nullable;
 
 public interface ChatCommandContext extends CommandContext, MessageChannelContext {
     @NotNull
-    GenericChatCommand getCommand();
+    User getUser();
+
+    @NotNull
+    ChatCommandHandler getCommand();
 
     @Nullable
     String getOptionAsString(@NotNull String option);
@@ -46,19 +50,19 @@ public interface ChatCommandContext extends CommandContext, MessageChannelContex
 
     @Nullable
     Boolean getOptionAsBoolean(@NotNull String option, @Nullable Boolean defaultValue);
-    
+
     @Nullable
     User getOptionAsUser(@NotNull String option);
 
     @Nullable
     User getOptionAsUser(@NotNull String option, @Nullable User defaultValue);
-    
+
     @Nullable
     Member getOptionAsMember(@NotNull String option);
 
     @Nullable
     Member getOptionAsMember(@NotNull String option, @Nullable Member defaultValue);
-    
+
     @Nullable
     Channel getOptionAsChannel(@NotNull String option);
 

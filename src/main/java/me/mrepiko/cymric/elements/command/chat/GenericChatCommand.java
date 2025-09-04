@@ -16,14 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public abstract class GenericChatCommand extends CommandLoader<ForgedChatCommandData> implements ChatCommandTemplate {
+public abstract class GenericChatCommand extends CommandLoader<ForgedChatCommandData> implements ChatCommandHandler {
 
     private final CommandFunctionalityType type;
 
     @Setter
-    private GenericChatCommand parentCommand;
+    private ChatCommandHandler parentCommand;
     @Setter
-    private List<GenericChatCommand> childrenCommands = new ArrayList<>();
+    private List<ChatCommandHandler> childrenCommands = new ArrayList<>();
 
     public GenericChatCommand(@NotNull String id) {
         this(id, CommandFunctionalityType.NORMAL);
@@ -77,3 +77,4 @@ public abstract class GenericChatCommand extends CommandLoader<ForgedChatCommand
     public abstract void onInteraction(@NotNull ChatCommandContext context);
 
 }
+

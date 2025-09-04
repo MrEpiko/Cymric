@@ -1,7 +1,7 @@
 package me.mrepiko.cymric.managers.impl;
 
 import me.mrepiko.cymric.annotations.elements.CymricTask;
-import me.mrepiko.cymric.elements.tasks.GenericTask;
+import me.mrepiko.cymric.elements.tasks.Task;
 import me.mrepiko.cymric.managers.GenericElementManager;
 import me.mrepiko.cymric.managers.TaskManager;
 import org.jetbrains.annotations.NotNull;
@@ -10,38 +10,38 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-public class TaskManagerImpl extends GenericElementManager<GenericTask> implements TaskManager {
+public class TaskManagerImpl extends GenericElementManager<Task> implements TaskManager {
 
     private final ScheduledExecutorService service = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
 
     @Override
     public void register() {
-        register(CymricTask.class, GenericTask.class);
+        register(CymricTask.class, Task.class);
     }
 
     @Override
-    public void registerAndStart(@NotNull GenericTask task) {
+    public void registerAndStart(@NotNull Task task) {
         register(task);
         scheduleTask(task);
     }
 
     @Override
     public void startAllTasks() {
-        for (GenericTask value : elements.values()) {
+        for (Task value : elements.values()) {
             scheduleTask(value);
         }
     }
 
     @Override
     public void stopAllTasks() {
-        for (GenericTask value : elements.values()) {
+        for (Task value : elements.values()) {
             value.stop();
         }
     }
 
     @Override
     public void reboot() {
-        for (GenericTask task : elements.values()) {
+        for (Task task : elements.values()) {
             if (!task.isCallUponReboot()) {
                 continue;
             }
@@ -50,7 +50,7 @@ public class TaskManagerImpl extends GenericElementManager<GenericTask> implemen
         }
     }
 
-    private void scheduleTask(@NotNull GenericTask task) {
+    private void scheduleTask(@NotNull Task task) {
         ScheduledFuture<?> scheduledFuture;
         switch (task.getType()) {
             case SCHEDULED -> {
@@ -59,8 +59,12 @@ public class TaskManagerImpl extends GenericElementManager<GenericTask> implemen
                     elements.remove(task.getId());
                 }, (long) task.getInterval() + 3, task.getTimeUnit()); // Remove task after it's completed.
             }
-            case REPEATING -> scheduledFuture = service.scheduleAtFixedRate(task, (long) task.getInterval(), (long) task.getPeriod(), task.getTimeUnit());
-            default -> throw new IllegalArgumentException("Unknown task type: " + task.getType());
+            case REPEATING -> {
+                scheduledFuture = service.scheduleAtFixedRate(task, (long) task.getInterval(), (long) task.getPeriod(), task.getTimeUnit());
+            }
+            default -> {
+                throw new IllegalArgumentException("Unknown task type: " + task.getType());
+            }
         }
         task.setFuture(scheduledFuture);
         task.setStartedAtTimestamp(System.currentTimeMillis() / 1000);

@@ -13,14 +13,15 @@ import me.mrepiko.cymric.context.commands.impl.PrefixCommandContextImpl;
 import me.mrepiko.cymric.context.commands.impl.SlashCommandContextImpl;
 import me.mrepiko.cymric.discord.DiscordCache;
 import me.mrepiko.cymric.elements.DeferType;
+import me.mrepiko.cymric.elements.command.CommandHandler;
 import me.mrepiko.cymric.elements.command.CommandLoader;
+import me.mrepiko.cymric.elements.command.chat.ChatCommandHandler;
 import me.mrepiko.cymric.elements.command.chat.ChatCommandType;
 import me.mrepiko.cymric.elements.command.chat.CommandFunctionalityType;
-import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
 import me.mrepiko.cymric.elements.command.chat.data.ChatCommandOptionData;
 import me.mrepiko.cymric.elements.command.chat.data.ForgedChatCommandData;
 import me.mrepiko.cymric.elements.command.chat.subtypes.ParentChatCommand;
-import me.mrepiko.cymric.elements.command.contextual.GenericContextualCommand;
+import me.mrepiko.cymric.elements.command.contextual.ContextualCommandHandler;
 import me.mrepiko.cymric.elements.command.contextual.data.ForgedContextualCommandData;
 import me.mrepiko.cymric.elements.command.data.CommandAvailabilityType;
 import me.mrepiko.cymric.elements.command.data.CommandData;
@@ -45,7 +46,7 @@ import java.util.List;
 
 import static me.mrepiko.cymric.mics.Utils.applyPlaceholders;
 
-public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> implements CommandManager {
+public class CommandManagerImpl extends GenericElementManager<CommandHandler<?>> implements CommandManager {
 
     private final CymricApi instance = DiscordBot.getInstance();
     private final CymricConfig config = instance.getConfig();
@@ -55,9 +56,9 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
             Constants.CONTEXTUAL_COMMAND_CONFIGURATION_FOLDER_PATH
     );
 
-    private final List<Class<? extends CommandLoader<?>>> commandTypes = List.of(
-            GenericChatCommand.class,
-            GenericContextualCommand.class
+    private final List<Class<? extends CommandHandler<?>>> commandTypes = List.of(
+            ChatCommandHandler.class,
+            ContextualCommandHandler.class
     );
 
     public CommandManagerImpl() {
@@ -68,7 +69,9 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     @Override
     public void registerGlobalCommands() {
+        JDA jda = instance.getFirstShard();
         if (config.getData().isDevelopment()) {
+            jda.updateCommands().addCommands(List.of()).queue();
             return;
         }
 
@@ -77,7 +80,6 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
         dataList.addAll(getCommandData(CommandAvailabilityType.BOT_DM, null));
         dataList.addAll(getCommandData(CommandAvailabilityType.GUILD, null));
 
-        JDA jda = instance.getFirstShard();
         jda.updateCommands().addCommands(
                 dataList.stream()
                         .map(JdaCommandData::get)
@@ -91,6 +93,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
             return;
         }
         List<JdaCommandData> dataList = getCommandData(CommandAvailabilityType.GUILD, guild);
+
         guild.updateCommands().addCommands(
                 dataList.stream()
                         .map(JdaCommandData::get)
@@ -112,10 +115,10 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
                 .toList();
     }
 
-    private boolean shouldIncludeCommand(CommandLoader<?> commandHolder, CommandAvailabilityType type, @Nullable Guild guild) {
-        CommandData data = commandHolder.getCommandData();
+    private boolean shouldIncludeCommand(@NotNull CommandHandler<?> handler, CommandAvailabilityType type, @Nullable Guild guild) {
+        CommandData data = handler.getCommandData();
 
-        if (commandHolder instanceof GenericChatCommand chatCommand) {
+        if (handler instanceof ChatCommandHandler chatCommand) {
             ForgedChatCommandData chatData = chatCommand.getData();
             // Exclude subcommands (only include top-level for registration)
             if (chatCommand.getParentCommand() != null) {
@@ -170,21 +173,21 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     // Set Discord command for (grand)children commands
     private void handleChildrenRegistration(@NotNull CommandLoader<?> holder, @NotNull Command discordCommand) {
-        if (!(holder instanceof GenericChatCommand chatCommand)) {
+        if (!(holder instanceof ChatCommandHandler chatCommand)) {
             return;
         }
-        List<GenericChatCommand> children = chatCommand.getChildrenCommands();
+        List<ChatCommandHandler> children = chatCommand.getChildrenCommands();
         if (children == null) {
             return;
         }
-        for (GenericChatCommand child : children) {
+        for (ChatCommandHandler child : children) {
             child.setDiscordCommand(discordCommand);
 
-            List<GenericChatCommand> grandchildren = child.getChildrenCommands();
+            List<ChatCommandHandler> grandchildren = child.getChildrenCommands();
             if (grandchildren == null || grandchildren.isEmpty()) {
                 continue;
             }
-            for (GenericChatCommand grandchild : grandchildren) {
+            for (ChatCommandHandler grandchild : grandchildren) {
                 grandchild.setDiscordCommand(discordCommand);
             }
         }
@@ -197,7 +200,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
         for (String path : DIRECTORY_PATHS) {
             setupDirectory(path);
         }
-        for (Class<? extends CommandLoader<?>> type : commandTypes) {
+        for (Class<? extends CommandHandler<?>> type : commandTypes) {
             register(CymricCommand.class, type);
         }
         formCommandFamilyTree();
@@ -207,8 +210,8 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     // This method organizes commands into a family tree structure (parent, child, grandchild).
     private void formCommandFamilyTree() {
-        for (CommandLoader<?> holder : elements.values()) {
-            if (!(holder instanceof GenericChatCommand chatCommand)) {
+        for (CommandHandler<?> handler : elements.values()) {
+            if (!(handler instanceof ChatCommandHandler chatCommand)) {
                 continue;
             }
             ForgedChatCommandData parentData = chatCommand.getData();
@@ -222,16 +225,16 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
             }
 
             for (String childId : childrenIds) {
-                CommandLoader<?> childHolder = getById(childId);
-                if (!(childHolder instanceof GenericChatCommand child)) {
-                    throw new IllegalArgumentException("Child command with ID " + childId + " is not a GenericChatCommand.");
+                CommandHandler<?> childHolder = getById(childId);
+                if (!(childHolder instanceof ChatCommandHandler child)) {
+                    throw new IllegalArgumentException("Child command with ID " + childId + " is not a ChatCommandHandler.");
                 }
                 if (child == parent) {
                     throw new IllegalArgumentException("A command cannot be its own child: " + parent.getId());
                 }
 
                 // At this point, child can also be a parent to other commands.
-                List<GenericChatCommand> childrenCommands = chatCommand.getChildrenCommands();
+                List<ChatCommandHandler> childrenCommands = chatCommand.getChildrenCommands();
                 if (childrenCommands == null) {
                     childrenCommands = new ArrayList<>();
                     chatCommand.setChildrenCommands(childrenCommands);
@@ -245,12 +248,12 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
     }
 
     private void validateFamilyTree() {
-        for (CommandLoader<?> holder : elements.values()) {
-            if (!(holder instanceof GenericChatCommand parent)) {
+        for (CommandHandler<?> handler : elements.values()) {
+            if (!(handler instanceof ChatCommandHandler parent)) {
                 continue;
             }
 
-            List<GenericChatCommand> childrenCommands = parent.getChildrenCommands();
+            List<ChatCommandHandler> childrenCommands = parent.getChildrenCommands();
             if (childrenCommands == null || childrenCommands.isEmpty()) {
                 if (parent.getType() == CommandFunctionalityType.PARENT) {
                     DiscordBot.getLogger().warn("Command {} is a ParentChatCommand but has no subcommands. This command will not be registered.", parent.getId());
@@ -259,13 +262,13 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
             }
 
             // Ensure that parent command does not have great-grandchildren commands.
-            for (GenericChatCommand child : childrenCommands) {
+            for (ChatCommandHandler child : childrenCommands) {
                 if (child == parent) {
                     throw new IllegalArgumentException("Command " + parent.getId() + " has a subcommand group " + child.getId() +
                             " which is the same as the parent command.");
                 }
 
-                List<GenericChatCommand> grandchildrenCommands = child.getChildrenCommands();
+                List<ChatCommandHandler> grandchildrenCommands = child.getChildrenCommands();
                 if (grandchildrenCommands == null || grandchildrenCommands.isEmpty()) {
                     if (child.getType() == CommandFunctionalityType.PARENT) {
                         DiscordBot.getLogger().warn("Command {} has a subcommand group {} which is a ParentChatCommand but has no subcommands. This command will not be registered.", parent.getId(), child.getId());
@@ -273,10 +276,10 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
                     continue;
                 }
 
-                for (GenericChatCommand grandchild : grandchildrenCommands) {
+                for (ChatCommandHandler grandchild : grandchildrenCommands) {
                     String message = getValidationErrorMessage(parent, child, grandchild);
 
-                    List<GenericChatCommand> greatGrandchildrenCommands = grandchild.getChildrenCommands();
+                    List<ChatCommandHandler> greatGrandchildrenCommands = grandchild.getChildrenCommands();
                     if (greatGrandchildrenCommands != null && !greatGrandchildrenCommands.isEmpty()) {
                         throw new IllegalArgumentException(message + " that has its own subcommands.");
                     }
@@ -285,7 +288,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
         }
     }
 
-    private @NotNull String getValidationErrorMessage(GenericChatCommand parent, GenericChatCommand child, GenericChatCommand grandchild) {
+    private @NotNull String getValidationErrorMessage(@NotNull ChatCommandHandler parent, @NotNull ChatCommandHandler child, @NotNull ChatCommandHandler grandchild) {
         String message = "Command " + parent.getId() + " has a subcommand group " + child.getId() +
                 " which has a subcommand " + grandchild.getId();
 
@@ -306,8 +309,8 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
     // Getters
 
     @Nullable
-    private <T extends CommandLoader<?>> T getByFullName(@NotNull String fullName, @NotNull Class<T> clazz) {
-        for (CommandLoader<?> value : elements.values()) {
+    private <T extends CommandHandler<?>> T getByFullName(@NotNull String fullName, @NotNull Class<T> clazz) {
+        for (CommandHandler<?> value : elements.values()) {
             if (!clazz.isInstance(value)) {
                 continue;
             }
@@ -322,8 +325,8 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     @Override
     public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
-        CommandLoader<?> holder = getByFullName(event.getFullCommandName(), GenericContextualCommand.class);
-        if (!(holder instanceof GenericContextualCommand contextualCommand)) {
+        ContextualCommandHandler contextualCommand = getByFullName(event.getFullCommandName(), ContextualCommandHandler.class);
+        if (contextualCommand == null) {
             return;
         }
 
@@ -341,8 +344,8 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     @Override
     public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
-        CommandLoader<?> holder = getByFullName(event.getFullCommandName(), GenericContextualCommand.class);
-        if (!(holder instanceof GenericContextualCommand contextualCommand)) {
+        ContextualCommandHandler contextualCommand = getByFullName(event.getFullCommandName(), ContextualCommandHandler.class);
+        if (contextualCommand == null) {
             return;
         }
 
@@ -357,7 +360,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
     }
 
     private void handleContextualCommand(@NotNull ContextualCommandContext context) {
-        GenericContextualCommand contextualCommand = context.getCommand();
+        ContextualCommandHandler contextualCommand = context.getCommand();
         GenericContextInteractionEvent<?> event = context.getEvent();
         ForgedContextualCommandData data = contextualCommand.getData();
 
@@ -372,7 +375,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        GenericChatCommand slashCommand = getByFullName(event.getFullCommandName(), GenericChatCommand.class);
+        ChatCommandHandler slashCommand = getByFullName(event.getFullCommandName(), ChatCommandHandler.class);
         if (slashCommand == null) {
             return;
         }
@@ -396,7 +399,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
             return;
         }
 
-        GenericChatCommand prefixCommand = payload.genericChatCommand;
+        ChatCommandHandler prefixCommand = payload.chatCommand;
         List<String> args = payload.args;
 
         PrefixCommandContext context = new PrefixCommandContextImpl(prefixCommand, event, args);
@@ -410,7 +413,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
     @Override
     public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
-        GenericChatCommand slashCommand = getByFullName(event.getFullCommandName(), GenericChatCommand.class);
+        ChatCommandHandler slashCommand = getByFullName(event.getFullCommandName(), ChatCommandHandler.class);
         if (slashCommand == null) {
             return;
         }
@@ -474,7 +477,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
 
         String fullName = "";
         boolean commandFound = false;
-        GenericChatCommand chatCommand = null;
+        ChatCommandHandler chatCommand = null;
         List<String> args = new ArrayList<>();
         for (int i = 0; i < split.length; i++) {
             if (commandFound) {
@@ -489,7 +492,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
                 fullName += " " + split[i];
             }
 
-            GenericChatCommand temp = getByFullName(fullName, GenericChatCommand.class);
+            ChatCommandHandler temp = getByFullName(fullName, ChatCommandHandler.class);
             if (first && temp == null) { // If the first part of the command is not found, return null.
                 return null;
             } else if (!first && temp == null) { // If temp is not found, that means that main command has been found.
@@ -509,17 +512,17 @@ public class CommandManagerImpl extends GenericElementManager<CommandLoader<?>> 
             return null;
         }
 
-        List<GenericChatCommand> childrenCommands = chatCommand.getChildrenCommands();
+        List<ChatCommandHandler> childrenCommands = chatCommand.getChildrenCommands();
         if (childrenCommands == null || childrenCommands.isEmpty()) {
             return new PrefixCommandPayload(chatCommand, args);
         }
 
-        return new PrefixCommandPayload(getByFullName(fullName, GenericChatCommand.class), args);
+        return new PrefixCommandPayload(getByFullName(fullName, ChatCommandHandler.class), args);
     }
 
     @AllArgsConstructor
     private static class PrefixCommandPayload {
-        private final GenericChatCommand genericChatCommand;
+        private final ChatCommandHandler chatCommand;
         private final List<String> args;
     }
 

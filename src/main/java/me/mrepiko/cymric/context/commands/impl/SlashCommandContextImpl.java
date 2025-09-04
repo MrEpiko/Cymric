@@ -2,8 +2,8 @@ package me.mrepiko.cymric.context.commands.impl;
 
 import lombok.Getter;
 import me.mrepiko.cymric.context.commands.SlashCommandContext;
-import me.mrepiko.cymric.elements.command.CommandLoader;
-import me.mrepiko.cymric.elements.command.chat.GenericChatCommand;
+import me.mrepiko.cymric.elements.command.CommandHandler;
+import me.mrepiko.cymric.elements.command.chat.ChatCommandHandler;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -17,10 +17,10 @@ import org.jetbrains.annotations.Nullable;
 public class SlashCommandContextImpl implements SlashCommandContext {
 
     private final SlashCommandInteractionEvent event;
-    private final GenericChatCommand command;
+    private final ChatCommandHandler command;
     private final SlashCommandInteraction interaction;
 
-    public SlashCommandContextImpl(@NotNull SlashCommandInteractionEvent event, @NotNull GenericChatCommand command) {
+    public SlashCommandContextImpl(@NotNull SlashCommandInteractionEvent event, @NotNull ChatCommandHandler command) {
         this.event = event;
         this.command = command;
         this.interaction = event.getInteraction();
@@ -38,9 +38,8 @@ public class SlashCommandContextImpl implements SlashCommandContext {
         return interaction;
     }
 
-    @NotNull
     @Override
-    public CommandLoader<?> getCommandHolder() {
+    public @NotNull CommandHandler<?> getCommandHandler() {
         return command;
     }
 

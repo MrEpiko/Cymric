@@ -10,7 +10,7 @@ import me.mrepiko.cymric.mics.Constants;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public abstract class GenericModal extends ConditionalElementLoader<ForgedModalData> implements ModalTemplate, SerializableBotElement<ForgedModalData> {
+public abstract class GenericModal extends ConditionalElementLoader<ForgedModalData> implements ModalHandler {
 
     public GenericModal(@NotNull String id) {
         super(id, Constants.MODAL_CONFIGURATION_FOLDER_PATH);

@@ -3,7 +3,7 @@ package me.mrepiko.cymric.managers.runtime.impl;
 import lombok.Getter;
 import lombok.Setter;
 import me.mrepiko.cymric.context.modal.ModalContext;
-import me.mrepiko.cymric.elements.modal.GenericModal;
+import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.elements.modal.data.ForgedModalData;
 import me.mrepiko.cymric.managers.runtime.RuntimeExtra;
 import me.mrepiko.cymric.managers.runtime.RuntimeModal;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class RuntimeModalImpl implements RuntimeModal {
 
     private final Modal modal;
-    private final GenericModal element;
+    private final ModalHandler element;
     private final ForgedModalData overriddenData;
     private final RuntimeExtra extra = new RuntimeExtra();
 
@@ -32,7 +32,7 @@ public class RuntimeModalImpl implements RuntimeModal {
 
     public RuntimeModalImpl(
             @NotNull User creator,
-            @NotNull GenericModal element,
+            @NotNull ModalHandler element,
             @Nullable ForgedModalData overriddenData,
             @NotNull Modal modal,
             @NotNull RuntimeExtra extra,

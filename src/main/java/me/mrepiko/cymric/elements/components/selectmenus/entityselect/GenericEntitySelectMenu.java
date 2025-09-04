@@ -3,17 +3,17 @@ package me.mrepiko.cymric.elements.components.selectmenus.entityselect;
 import lombok.Getter;
 import me.mrepiko.cymric.context.components.EntitySelectMenuContext;
 import me.mrepiko.cymric.elements.ElementError;
-import me.mrepiko.cymric.elements.components.RowComponent;
 import me.mrepiko.cymric.elements.components.ComponentLoader;
+import me.mrepiko.cymric.elements.components.RowComponent;
 import me.mrepiko.cymric.elements.components.selectmenus.entityselect.data.ForgedEntitySelectMenuData;
-import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import me.mrepiko.cymric.mics.Constants;
 import me.mrepiko.cymric.mics.Utils;
+import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-public abstract class GenericEntitySelectMenu extends ComponentLoader<ForgedEntitySelectMenuData> implements EntitySelectMenuTemplate {
+public abstract class GenericEntitySelectMenu extends ComponentLoader<ForgedEntitySelectMenuData> implements EntitySelectMenuHandler {
 
     public GenericEntitySelectMenu(@NotNull String id) {
         super(id, Constants.ENTITY_SELECT_MENU_CONFIGURATION_FOLDER_PATH);

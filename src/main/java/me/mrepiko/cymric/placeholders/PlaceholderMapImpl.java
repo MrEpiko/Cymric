@@ -6,6 +6,7 @@ import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.config.main.CymricConfig;
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
 import me.mrepiko.cymric.context.plain.MessageContext;
+import me.mrepiko.cymric.elements.command.CommandHandler;
 import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.mics.Utils;
 import net.dv8tion.jda.api.entities.*;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -49,13 +51,13 @@ public class PlaceholderMapImpl implements PlaceholderMap {
             config.getConstants().forEach((key, value) -> put("c_" + key, value));
         }
         if (includeCommandPlaceholders) {
-            for (CommandLoader<?> holder : instance.getCommandManager().getRegistered()) {
-                Command discordCommand = holder.getDiscordCommand();
+            for (CommandHandler<?> handler : instance.getCommandManager().getRegistered()) {
+                Command discordCommand = handler.getDiscordCommand();
                 if (discordCommand == null) {
                     continue;
                 }
-                String name = holder.getFullName().replace(" ", "_").toLowerCase();
-                put("cmd_" + name, discordCommand);
+                String commandName = handler.getFullName().replace(" ", "_").toLowerCase();
+                put("cmd_" + commandName, discordCommand);
             }
         }
         if (map != null) {
@@ -240,6 +242,12 @@ public class PlaceholderMapImpl implements PlaceholderMap {
         put(identifier + "_timestamp_millis", String.valueOf(offsetDateTime.toInstant().toEpochMilli()));
         put(identifier + "_date", offsetDateTime.format(DateTimeFormatter.ofPattern(config.getDefaultDateFormat())));
         put(identifier + "_time", offsetDateTime.format(DateTimeFormatter.ofPattern(config.getDefaultTimeFormat())));
+    }
+
+    @Override
+    public void put(@NotNull String identifier, @NotNull Timestamp timestamp) {
+        OffsetDateTime offsetDateTime = timestamp.toInstant().atOffset(OffsetDateTime.now().getOffset());
+        put(identifier, offsetDateTime);
     }
 
     @Override

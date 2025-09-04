@@ -2,8 +2,8 @@ package me.mrepiko.cymric.context.commands.impl;
 
 import lombok.Getter;
 import me.mrepiko.cymric.context.commands.ContextualCommandContext;
-import me.mrepiko.cymric.elements.command.CommandLoader;
-import me.mrepiko.cymric.elements.command.contextual.GenericContextualCommand;
+import me.mrepiko.cymric.elements.command.CommandHandler;
+import me.mrepiko.cymric.elements.command.contextual.ContextualCommandHandler;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class ContextualCommandContextImpl implements ContextualCommandContext {
 
     private final GenericContextInteractionEvent<?> event;
-    private final GenericContextualCommand command;
+    private final ContextualCommandHandler command;
     private final ContextInteraction<?> interaction;
 
     @Nullable
@@ -29,8 +29,8 @@ public class ContextualCommandContextImpl implements ContextualCommandContext {
     private final Member selectedMember;
 
     public ContextualCommandContextImpl(
-            GenericContextInteractionEvent<?> event,
-            GenericContextualCommand command,
+            @NotNull GenericContextInteractionEvent<?> event,
+            @NotNull ContextualCommandHandler command,
             @Nullable Message selectedMessage,
             @Nullable User selectedUser,
             @Nullable Member selectedMember
@@ -51,7 +51,12 @@ public class ContextualCommandContextImpl implements ContextualCommandContext {
 
     @NotNull
     @Override
-    public CommandLoader<?> getCommandHolder() {
+    public ContextualCommandHandler getCommand() {
+        return command;
+    }
+
+    @Override
+    public @NotNull CommandHandler<?> getCommandHandler() {
         return command;
     }
 

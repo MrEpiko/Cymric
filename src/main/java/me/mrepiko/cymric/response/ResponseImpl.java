@@ -10,12 +10,12 @@ import me.mrepiko.cymric.context.components.ComponentContext;
 import me.mrepiko.cymric.context.modal.ModalContext;
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
 import me.mrepiko.cymric.discord.DiscordCache;
-import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
+import me.mrepiko.cymric.elements.components.ComponentHandler;
 import me.mrepiko.cymric.elements.components.ComponentLoader;
+import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
 import me.mrepiko.cymric.elements.components.RowComponent;
-import me.mrepiko.cymric.elements.modal.GenericModal;
+import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.elements.modal.data.ForgedModalData;
-import me.mrepiko.cymric.elements.modal.ModalTemplate;
 import me.mrepiko.cymric.managers.ComponentManager;
 import me.mrepiko.cymric.managers.ModalManager;
 import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
@@ -73,7 +73,7 @@ public class ResponseImpl implements Response {
     @Nullable
     private final MessageChannelContext context;
     private final Map<Class<? extends ComponentLoader<?>>, Consumer<ComponentContext>> componentInteractionOverrides;
-    private final Map<Class<? extends ModalTemplate>, Consumer<ModalContext>> modalInteractionOverrides;
+    private final Map<Class<? extends ModalHandler>, Consumer<ModalContext>> modalInteractionOverrides;
 
     protected ResponseImpl(@NotNull ResponseBuilder builder) {
         this.map = builder.getMap();
@@ -451,24 +451,24 @@ public class ResponseImpl implements Response {
 
         // ActionComponent: Row index (0-4)
         Map<ActionComponent, Integer> indexes = new HashMap<>();
-        List<Pair<ComponentLoader<?>, Object>> components = action.getComponents();
+        List<Pair<ComponentHandler<?>, Object>> components = action.getComponents();
         if (components == null || components.isEmpty()) {
             return Collections.emptyList();
         }
 
-        for (Pair<ComponentLoader<?>, Object> pair : components) {
-            ComponentLoader<?> holder = pair.getFirst();
+        for (Pair<ComponentHandler<?>, Object> pair : components) {
+            ComponentHandler<?> handler = pair.getFirst();
             Object dataObject = pair.getSecond();
-            RowComponent rowComponent = holder.getRowComponent(map, dataObject);
+            RowComponent rowComponent = handler.getRowComponent(map, dataObject);
             ActionComponent actionComponent = rowComponent.getActionComponent();
 
             RuntimeComponent runtimeComponent = new RuntimeComponentImpl(
                     user,
-                    holder,
+                    handler,
                     (ForgedComponentDataContainer) dataObject,
                     actionComponent,
                     runtimeExtra,
-                    componentInteractionOverrides.getOrDefault(holder.getClass(), null)
+                    componentInteractionOverrides.getOrDefault(handler.getClass(), null)
             );
 
             componentManager.addRuntimeComponent(runtimeComponent);
@@ -492,27 +492,27 @@ public class ResponseImpl implements Response {
     }
 
     private Modal registerRuntimeModal() {
-        Pair<? extends GenericModal, ForgedModalData> modalPair = action.getModal();
+        Pair<? extends ModalHandler, ForgedModalData> modalPair = action.getModal();
         if (modalPair == null) {
             throw new IllegalStateException("Modal must be set in ResponseData.");
         }
-        GenericModal genericModal = modalPair.getFirst();
+        ModalHandler modalHandler = modalPair.getFirst();
         ForgedModalData modalData = modalPair.getSecond();
 
         User user = getUser();
         if (user == null) {
             throw new IllegalStateException("User not present in ResponseData.");
         }
-        String uniqueId = Utils.generateUniqueComponentId(genericModal.getId());
+        String uniqueId = Utils.generateUniqueComponentId(modalHandler.getId());
         Modal modal = modalData.getModal(uniqueId, map);
 
         RuntimeModal runtimeModal = new RuntimeModalImpl(
                 user,
-                genericModal,
+                modalHandler,
                 modalData,
                 modal,
                 runtimeExtra,
-                modalInteractionOverrides.getOrDefault(genericModal.getClass(), null)
+                modalInteractionOverrides.getOrDefault(modalHandler.getClass(), null)
         );
 
         modalManager.addRuntimeModal(runtimeModal);

@@ -1,8 +1,5 @@
 package me.mrepiko.cymric.elements.components;
 
-import me.mrepiko.cymric.elements.containers.ComponentDataContainer;
-import me.mrepiko.cymric.elements.containers.ConditionalDataContainer;
-import me.mrepiko.cymric.elements.containers.DeferrableElementDataContainer;
-import me.mrepiko.cymric.elements.containers.TimeoutableDataContainer;
+import me.mrepiko.cymric.elements.containers.*;
 
-public interface ForgedComponentDataContainer extends ComponentDataContainer, TimeoutableDataContainer, ConditionalDataContainer, DeferrableElementDataContainer { }
+public interface ForgedComponentDataContainer extends ComponentDataContainer, TimeoutableDataContainer, ConditionalDataContainer, DeferrableElementDataContainer, ElementDataContainer { }
