@@ -4,6 +4,7 @@ import me.mrepiko.cymric.context.plain.MessageChannelContext;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,7 @@ public interface PlaceholderMap {
 
     void put(@NotNull String identifier, @NotNull OffsetDateTime offsetDateTime);
 
-    void put(@NotNull String identifier, @NotNull Command command);
+    void put(@NotNull String identifier, @NotNull ICommandReference command);
 
     void put(@NotNull String identifier, @Nullable List<?> list, @NotNull ListStyle style, @NotNull String defaultValue);
 

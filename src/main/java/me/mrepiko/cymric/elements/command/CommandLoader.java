@@ -7,7 +7,7 @@ import me.mrepiko.cymric.elements.ConditionalElementLoader;
 import me.mrepiko.cymric.elements.command.data.CommandData;
 import me.mrepiko.cymric.elements.command.data.JdaCommandData;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ public abstract class CommandLoader<T extends ForgedCommandDataContainer> extend
     @Setter(AccessLevel.PROTECTED)
     private CommandData commandData;
     @Setter
-    private Command discordCommand;
+    private ICommandReference discordCommand;
 
     public CommandLoader(@NotNull String id, @NotNull String folderPath) {
         super(id, folderPath);

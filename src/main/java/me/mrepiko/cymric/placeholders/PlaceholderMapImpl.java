@@ -7,12 +7,12 @@ import me.mrepiko.cymric.config.main.CymricConfig;
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
 import me.mrepiko.cymric.context.plain.MessageContext;
 import me.mrepiko.cymric.elements.command.CommandHandler;
-import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.mics.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,8 +52,11 @@ public class PlaceholderMapImpl implements PlaceholderMap {
         }
         if (includeCommandPlaceholders) {
             for (CommandHandler<?> handler : instance.getCommandManager().getRegistered()) {
-                Command discordCommand = handler.getDiscordCommand();
+                ICommandReference discordCommand = handler.getDiscordCommand();
                 if (discordCommand == null) {
+                    continue;
+                }
+                if (discordCommand instanceof Command command && (!command.getSubcommandGroups().isEmpty() || !command.getSubcommands().isEmpty())) {
                     continue;
                 }
                 String commandName = handler.getFullName().replace(" ", "_").toLowerCase();
@@ -251,7 +254,7 @@ public class PlaceholderMapImpl implements PlaceholderMap {
     }
 
     @Override
-    public void put(@NotNull String identifier, @NotNull Command command) {
+    public void put(@NotNull String identifier, @NotNull ICommandReference command) {
         String discordId = command.getId();
         put(identifier + "_discord_id", discordId);
         put(identifier + "_id", command.getId());

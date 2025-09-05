@@ -14,7 +14,6 @@ import me.mrepiko.cymric.context.commands.impl.SlashCommandContextImpl;
 import me.mrepiko.cymric.discord.DiscordCache;
 import me.mrepiko.cymric.elements.DeferType;
 import me.mrepiko.cymric.elements.command.CommandHandler;
-import me.mrepiko.cymric.elements.command.CommandLoader;
 import me.mrepiko.cymric.elements.command.chat.ChatCommandHandler;
 import me.mrepiko.cymric.elements.command.chat.ChatCommandType;
 import me.mrepiko.cymric.elements.command.chat.CommandFunctionalityType;
@@ -40,15 +39,18 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static me.mrepiko.cymric.mics.Utils.applyPlaceholders;
 
+
 public class CommandManagerImpl extends GenericElementManager<CommandHandler<?>> implements CommandManager {
 
     private final CymricApi instance = DiscordBot.getInstance();
+    private final Logger logger = DiscordBot.getLogger();
     private final CymricConfig config = instance.getConfig();
 
     private final List<String> DIRECTORY_PATHS = List.of(
@@ -93,7 +95,6 @@ public class CommandManagerImpl extends GenericElementManager<CommandHandler<?>>
             return;
         }
         List<JdaCommandData> dataList = getCommandData(CommandAvailabilityType.GUILD, guild);
-
         guild.updateCommands().addCommands(
                 dataList.stream()
                         .map(JdaCommandData::get)
@@ -159,37 +160,50 @@ public class CommandManagerImpl extends GenericElementManager<CommandHandler<?>>
 
     private void handlePostRegistration(List<Command> commands) {
         for (Command command : commands) {
-            CommandLoader<?> holder = getByFullName(
+            CommandHandler<?> handler = getByFullName(
                     command.getFullCommandName(),
-                    CommandLoader.class
+                    CommandHandler.class
             );
-            if (holder == null) {
+            if (handler == null) {
                 throw new IllegalArgumentException("Command with full name " + command.getFullCommandName() + " not found in registered commands.");
             }
-            handleChildrenRegistration(holder, command);
-            holder.setDiscordCommand(command);
+            handleChildrenRegistration(handler, command);
+            handler.setDiscordCommand(command);
         }
     }
 
     // Set Discord command for (grand)children commands
-    private void handleChildrenRegistration(@NotNull CommandLoader<?> holder, @NotNull Command discordCommand) {
-        if (!(holder instanceof ChatCommandHandler chatCommand)) {
+    private void handleChildrenRegistration(@NotNull CommandHandler<?> handler, @NotNull Command discordCommand) {
+        if (!(handler instanceof ChatCommandHandler chatCommand)) {
             return;
         }
         List<ChatCommandHandler> children = chatCommand.getChildrenCommands();
-        if (children == null) {
+        List<Command.SubcommandGroup> subcommandGroups = discordCommand.getSubcommandGroups();
+        List<Command.Subcommand> subcommands = discordCommand.getSubcommands();
+        if (children == null || children.isEmpty() || (subcommandGroups.isEmpty() && subcommands.isEmpty())) {
             return;
         }
-        for (ChatCommandHandler child : children) {
-            child.setDiscordCommand(discordCommand);
 
-            List<ChatCommandHandler> grandchildren = child.getChildrenCommands();
-            if (grandchildren == null || grandchildren.isEmpty()) {
+        if (subcommands.isEmpty()) {
+            for (Command.SubcommandGroup group : subcommandGroups) {
+                List<Command.Subcommand> groupSubcommands = group.getSubcommands();
+                setSubcommandHandlers(groupSubcommands);
+            }
+            return;
+        }
+
+        setSubcommandHandlers(subcommands);
+    }
+
+    private void setSubcommandHandlers(@NotNull List<Command.Subcommand> subcommands) {
+        for (Command.Subcommand subcommand : subcommands) {
+            String name = subcommand.getFullCommandName();
+            ChatCommandHandler subHandler = getByFullName(name, ChatCommandHandler.class);
+            if (subHandler == null) {
+                logger.warn("Subcommand with name {} not found", name);
                 continue;
             }
-            for (ChatCommandHandler grandchild : grandchildren) {
-                grandchild.setDiscordCommand(discordCommand);
-            }
+            subHandler.setDiscordCommand(subcommand);
         }
     }
 
@@ -256,7 +270,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHandler<?>>
             List<ChatCommandHandler> childrenCommands = parent.getChildrenCommands();
             if (childrenCommands == null || childrenCommands.isEmpty()) {
                 if (parent.getType() == CommandFunctionalityType.PARENT) {
-                    DiscordBot.getLogger().warn("Command {} is a ParentChatCommand but has no subcommands. This command will not be registered.", parent.getId());
+                    logger.warn("Command {} is a ParentChatCommand but has no subcommands. This command will not be registered.", parent.getId());
                 }
                 continue;
             }
@@ -271,7 +285,7 @@ public class CommandManagerImpl extends GenericElementManager<CommandHandler<?>>
                 List<ChatCommandHandler> grandchildrenCommands = child.getChildrenCommands();
                 if (grandchildrenCommands == null || grandchildrenCommands.isEmpty()) {
                     if (child.getType() == CommandFunctionalityType.PARENT) {
-                        DiscordBot.getLogger().warn("Command {} has a subcommand group {} which is a ParentChatCommand but has no subcommands. This command will not be registered.", parent.getId(), child.getId());
+                        logger.warn("Command {} has a subcommand group {} which is a ParentChatCommand but has no subcommands. This command will not be registered.", parent.getId(), child.getId());
                     }
                     continue;
                 }
