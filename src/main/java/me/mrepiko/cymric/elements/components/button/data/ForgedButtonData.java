@@ -54,10 +54,10 @@ public class ForgedButtonData implements ForgedComponentDataContainer {
 
     @NotNull
     public Button getButton(@NotNull String id, @Nullable PlaceholderMap map) {
-        String label = buttonData.getLabel();
-        String url = buttonData.getUrl();
+        String label = Utils.applyPlaceholders(map, buttonData.getLabel());
+        String url = Utils.applyPlaceholders(map, buttonData.getUrl());
         ButtonStyle style = buttonData.getStyle();
-        String emojiFormatted = buttonData.getEmojiFormatted();
+        String emojiFormatted = Utils.applyPlaceholders(map, buttonData.getEmojiFormatted());
 
         Button button = Button.of(style, (style == ButtonStyle.LINK && url != null && !url.isEmpty()) ? url : id, Utils.applyPlaceholders(map, label));
         if (emojiFormatted != null && !emojiFormatted.isEmpty()) {
