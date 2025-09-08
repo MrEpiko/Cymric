@@ -78,16 +78,16 @@ public class DiscordBot extends ListenerAdapter implements CymricApi {
     }
 
     private void setupManagersAndElements() {
+        this.moduleManager = new ModuleManagerImpl();
         this.commandManager = new CommandManagerImpl();
         this.componentManager = new ComponentManagerImpl();
         this.modalManager = new ModalManagerImpl();
-        this.moduleManager = new ModuleManagerImpl();
         this.taskManager = new TaskManagerImpl();
 
+        this.moduleManager.register();
         this.commandManager.register();
         this.componentManager.register();
         this.modalManager.register();
-        this.moduleManager.register();
         this.taskManager.register();
     }
 
