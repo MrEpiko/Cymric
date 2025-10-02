@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
@@ -56,6 +58,28 @@ public class JacksonUtils {
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+
+        DefaultPrettyPrinter printer = getDefaultPrettyPrinter();
+        mapper.setDefaultPrettyPrinter(printer);
+    }
+
+    @NotNull
+    private static DefaultPrettyPrinter getDefaultPrettyPrinter() {
+        DefaultIndenter indenter = new DefaultIndenter("  ", "\n");
+        DefaultPrettyPrinter printer = new DefaultPrettyPrinter() {
+            @Override
+            public void writeObjectFieldValueSeparator(com.fasterxml.jackson.core.JsonGenerator g) throws IOException {
+                g.writeRaw(": ");
+            }
+
+            @Override
+            public DefaultPrettyPrinter createInstance() {
+                return this;
+            }
+        };
+        printer.indentObjectsWith(indenter);
+        printer.indentArraysWith(indenter);
+        return printer;
     }
 
     /**
