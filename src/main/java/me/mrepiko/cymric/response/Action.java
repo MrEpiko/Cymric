@@ -36,6 +36,7 @@ import me.mrepiko.cymric.response.data.components.ActionModalData;
 import me.mrepiko.cymric.response.data.components.ActionStringSelectMenuData;
 import me.mrepiko.cymric.response.data.embed.FieldData;
 import me.mrepiko.cymric.response.data.embed.MessageEmbedData;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
@@ -132,11 +133,12 @@ public class Action {
         throw new IllegalArgumentException("No StringSelectMenuData found for class: " + clazz.getName());
     }
 
-    protected void initialize(@NotNull PlaceholderMap map) {
+    @NotNull
+    protected PlaceholderMap initialize(@NotNull PlaceholderMap map) {
         initializeFiles();
         initializeModal();
         initializeComponents();
-        initializeValues(map);
+        return initializeValues(map);
     }
 
     private void initializeFiles() {
@@ -271,7 +273,8 @@ public class Action {
      *
      * @param map The PlaceholderMap to initialize the values with.
      */
-    private void initializeValues(@NotNull PlaceholderMap map) {
+    @NotNull
+    private PlaceholderMap initializeValues(@NotNull PlaceholderMap map) {
         CymricApi instance = DiscordBot.getInstance();
         MessageChannelContext newMapContext;
         MessageChannelContext context = map.getContext();
@@ -279,20 +282,38 @@ public class Action {
         if (data.isInheritMessage() && message != null) { // If message has been inherited from the previous response.
             newMapContext = new MessageContextImpl(message);
             channelOrMessageProvided = true;
-            map = PlaceholderMapBuilder.create(newMapContext, map).build();
-            return;
+            return PlaceholderMapBuilder.create(newMapContext, map).build();
         }
 
+        String guildId = Utils.applyPlaceholders(map, data.getGuildId());
         String channelId = Utils.applyPlaceholders(map, data.getChannelId());
         String messageId = Utils.applyPlaceholders(map, data.getMessageId());
         boolean forceMessage = data.isForceMessage();
-        if ((channelId.isEmpty()) && context == null) {
+        if (channelId.isEmpty() && context == null) {
             throw new IllegalArgumentException("Either channelId or messageChannelUnion must be provided");
         }
 
         MessageChannel originalChannel = (context == null) ? null : context.getMessageChannel();
-        boolean channelIdProvided = (!channelId.isEmpty());
-        messageChannel = (!channelIdProvided) ? originalChannel : (MessageChannel) instance.getShardManager().getGuildChannelById(channelId);
+        boolean channelIdProvided = !channelId.isEmpty();
+        boolean equalsToContextChannel = context != null && context.getMessageChannel().getId().equalsIgnoreCase(channelId);
+
+        if (channelIdProvided) {
+            if (equalsToContextChannel) {
+                messageChannel = context.getMessageChannel();
+            } else {
+                if (guildId.isEmpty()) {
+                    throw new IllegalArgumentException("If channelId is provided and is not equal to the context channel, guildId must be provided");
+                }
+                Guild guild = instance.getShardManager().getGuildById(guildId);
+                if (guild == null) {
+                    throw new IllegalArgumentException("Guild with ID " + guildId + " not found");
+                }
+                messageChannel = guild.getTextChannelById(channelId);
+            }
+        } else {
+            messageChannel = originalChannel;
+        }
+
         if (messageChannel == null) {
             throw new IllegalArgumentException("MessageChannel with ID " + channelId + " not found");
         }
@@ -302,7 +323,7 @@ public class Action {
                 if (context instanceof MessageContext messageContext) {
                     message = messageContext.getMessage();
                 }
-                return;
+                return map;
             }
             // If messageId is not provided, we will use the channel to create a new MessageChannelContext.
             newMapContext = new MessageChannelContextImpl(messageChannel, (context == null) ? null : context.getUser());
@@ -313,7 +334,7 @@ public class Action {
         }
 
         channelOrMessageProvided = true;
-        map = PlaceholderMapBuilder.create(newMapContext, map).build();
+        return PlaceholderMapBuilder.create(newMapContext, map).build();
     }
 
     public boolean isEmpty() {

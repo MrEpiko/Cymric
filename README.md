@@ -282,6 +282,7 @@ It is possible to inherit a message from the previous action. This means that if
 {
   "response": [
     {
+      "guild_id": "1234",
       "channel_id": "1234",
       "content": "This is the first message"
     },

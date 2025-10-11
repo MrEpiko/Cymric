@@ -74,19 +74,7 @@ public class ResponseBuilder {
             return new ResponseBuilder(map, null, null);
         }
 
-        CompletableFuture<Void> future = CompletableFuture
-                .runAsync(() -> first.initialize(map))
-                .exceptionally(throwable -> {
-                    DiscordBot.getLogger().error("Failed to initialize action: {}", first, throwable);
-                    return null;
-                })
-                .orTimeout(5000, TimeUnit.MILLISECONDS);
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-
+        map = first.initialize(map);
         return new ResponseBuilder(map, first, chain);
     }
 

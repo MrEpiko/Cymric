@@ -446,7 +446,7 @@ public class ResponseImpl implements Response {
     private List<LayoutComponent> registerRuntimeComponentsAndSortRows() {
         User user = getUser();
         if (user == null) {
-            throw new IllegalStateException("User not present in ResponseData.");
+            return List.of();
         }
 
         // ActionComponent: Row index (0-4)

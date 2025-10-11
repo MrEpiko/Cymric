@@ -16,6 +16,7 @@ import java.util.List;
 public class ActionData {
 
     private String messageId;
+    private String guildId;
     private String channelId;
     private boolean forceMessage;
 
