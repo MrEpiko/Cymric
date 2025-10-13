@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -15,11 +17,30 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Utils {
 
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final String allowedChars = "QWERTYUIOPLKJHGFDSAZXCVBNMqwertyuioplkjhgfdsazxcvbnm1234567890_";
+
+    private static final Pattern ENV_PATTERN = Pattern.compile("\\$\\{([^:}]+)(?::([^}]*))?}");
+    private static final Map<String, String> DOT_ENV = new HashMap<>();
+
+    static {
+        try (Stream<String> stream = Files.lines(Paths.get(".env"))) {
+            stream.map(String::trim)
+                    .filter(line -> !line.isEmpty() && !line.startsWith("#"))
+                    .forEach(line -> {
+                        String[] parts = line.split("=", 2);
+                        if (parts.length == 2) {
+                            DOT_ENV.put(parts[0], parts[1]);
+                        }
+                    });
+        } catch (IOException ignored) { }
+    }
 
     /**
      * Generates a unique component ID by appending a random 32-character string to the provided component ID.
@@ -45,6 +66,33 @@ public class Utils {
      */
     public static String getSanitizedComponentId(String componentId) {
         return componentId.split(":")[0];
+    }
+
+    /**
+     * Resolves environment variables in the input string. Environment variables are denoted by the syntax ${VAR_NAME} or ${VAR_NAME:default_value}.
+     * If the environment variable is not set, the default value (if provided) will be used.
+     *
+     * @param input The input string containing environment variable placeholders.
+     * @return The input string with environment variables resolved.
+     */
+    public static String resolveEnv(String input) {
+        if (input == null) return null;
+
+        Matcher matcher = ENV_PATTERN.matcher(input);
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String defaultValue = matcher.group(2);
+
+            String value = DOT_ENV.getOrDefault(key, System.getenv(key));
+            if (value == null) {
+                value = defaultValue;
+            }
+
+            matcher.appendReplacement(sb, value != null ? Matcher.quoteReplacement(value) : "");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     /**

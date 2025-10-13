@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
 import lombok.Getter;
+import me.mrepiko.cymric.jackson.serializers.EnvBeanDeserializerModifier;
 import me.mrepiko.cymric.jackson.serializers.SerializerModifier;
 import me.mrepiko.cymric.jackson.serializers.SnowflakeSerializer;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -38,6 +39,7 @@ public class JacksonUtils {
 
         SimpleModule module = new SimpleModule();
         module.setSerializerModifier(new SerializerModifier());
+        module.setDeserializerModifier(new EnvBeanDeserializerModifier());
         module.addSerializer(ISnowflake.class, new SnowflakeSerializer());
         mapper.registerModule(module);
         return mapper;

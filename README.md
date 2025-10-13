@@ -56,6 +56,8 @@ Main configuration file aka `config.json` contains some basic information about 
 ```
 - `arg` fields - these fields are used as template fields for prefix chat commands. They define how will the bot display command's argument explanations.
 
+This is the only configuration file that supports environment variable injecting via `${VAR}`/`${VAR:default}`. In case that, at some point, you want to have another file with injectable environment variables, you can do so by annotating its data class with `@ReadEnvVariables`. Please be cautious when using this annotation, as it will read environment variables for every field within the class!
+
 ## Elements
 Elements (commands, buttons, modals, etc.) represent the building blocks of your bot. Considering Cymric is all about JSON configuration, these elements can be easily configured using JSON files. Each element has its own data class (also referred to as a "forged data") that defines its properties and behavior. Forged data classes can include common classes such as data classes representing components, timeout-related behavior, conditional behavior, and more.
 

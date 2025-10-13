@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.*;
+import me.mrepiko.cymric.annotations.ReadEnvVariables;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ReadEnvVariables
 public class CymricData {
 
     private String token;
