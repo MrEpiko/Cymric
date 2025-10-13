@@ -146,7 +146,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentHandler
 
         StringSelectMenuHandler selectMenuHandler = (StringSelectMenuHandler) getById(sanitizedComponentId);
         RuntimeComponent runtimeComponent = getRuntimeComponent(uniqueComponentId);
-        ForgedStringSelectMenuData data = (runtimeComponent == null) ? selectMenuHandler.getData() : ((StringSelectMenuHandler) runtimeComponent.getElement()).getData();
+        ForgedStringSelectMenuData data = (runtimeComponent == null) ? selectMenuHandler.getData() : (ForgedStringSelectMenuData) runtimeComponent.getOverriddenData();
 
         runtimeComponent = createRuntimeComponent(
                 runtimeComponent,
@@ -171,7 +171,7 @@ public class ComponentManagerImpl extends GenericElementManager<ComponentHandler
 
         EntitySelectMenuHandler selectMenuHandler = (EntitySelectMenuHandler) getById(sanitizedComponentId);
         RuntimeComponent runtimeComponent = getRuntimeComponent(uniqueComponentId);
-        ForgedEntitySelectMenuData data = (runtimeComponent == null) ? selectMenuHandler.getData() : ((EntitySelectMenuHandler) runtimeComponent.getElement()).getData();
+        ForgedEntitySelectMenuData data = (runtimeComponent == null) ? selectMenuHandler.getData() : (ForgedEntitySelectMenuData) runtimeComponent.getOverriddenData();
 
         runtimeComponent = createRuntimeComponent(
                 runtimeComponent,

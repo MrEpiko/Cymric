@@ -52,7 +52,7 @@ public class ModalManagerImpl extends GenericElementManager<ModalHandler> implem
             data = modalHandler.getData();
             modal = data.getModal(modalId, null);
         } else {
-            data = runtimeModal.getElement().getData();
+            data = runtimeModal.getOverriddenData();
             modal = runtimeModal.getModal();
         }
 
