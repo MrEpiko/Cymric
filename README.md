@@ -73,7 +73,6 @@ Each element has its own generic class that defines its type and behavior. In or
 | Modal                              | GenericModal             | @CymricModal     |
 | Module                             | GenericModule            | @CymricModule    |
 | Task                               | GenericTask              | @CymricTask      |
-| Cacheable task                     | GenericCacheableTask     | @CymricTask      |
 
 Although configuration folders will be set up automatically, element's JSON files will not be created automatically. This is to allow for more flexibility when it comes to which elements you want to use in your bot. Each element's JSON file is named `<element_id>.json`. Once the file is created, it will be populated automatically with the default values upon the next bot start.
 
