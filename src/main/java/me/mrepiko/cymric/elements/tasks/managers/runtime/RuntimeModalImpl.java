@@ -1,12 +1,11 @@
-package me.mrepiko.cymric.managers.runtime.impl;
+package me.mrepiko.cymric.elements.tasks.managers.runtime;
 
 import lombok.Getter;
 import lombok.Setter;
 import me.mrepiko.cymric.context.modal.ModalContext;
 import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.elements.modal.data.ForgedModalData;
-import me.mrepiko.cymric.managers.runtime.RuntimeExtra;
-import me.mrepiko.cymric.managers.runtime.RuntimeModal;
+import me.mrepiko.cymric.elements.managers.runtime.RuntimeExtra;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.modals.Modal;

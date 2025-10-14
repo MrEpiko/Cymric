@@ -1,4 +1,4 @@
-package me.mrepiko.cymric.managers;
+package me.mrepiko.cymric.elements.managers;
 
 import me.mrepiko.cymric.elements.plain.BotElement;
 import me.mrepiko.cymric.elements.plain.Reloadable;

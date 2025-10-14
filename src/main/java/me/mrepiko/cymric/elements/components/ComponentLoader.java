@@ -9,7 +9,7 @@ import me.mrepiko.cymric.discord.DiscordUtils;
 import me.mrepiko.cymric.elements.ConditionalElementLoader;
 import me.mrepiko.cymric.elements.data.ComponentData;
 import me.mrepiko.cymric.elements.data.TimeoutableElementData;
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
+import me.mrepiko.cymric.elements.components.managers.runtime.RuntimeComponent;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import me.mrepiko.cymric.response.ResponseBuilder;
 import me.mrepiko.cymric.response.data.ResponseData;

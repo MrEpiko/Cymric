@@ -1,4 +1,4 @@
-package me.mrepiko.cymric.managers.runtime;
+package me.mrepiko.cymric.elements.managers.runtime;
 
 import me.mrepiko.cymric.context.plain.MessageChannelContext;
 import me.mrepiko.cymric.elements.plain.BotElement;

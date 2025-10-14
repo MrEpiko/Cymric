@@ -5,7 +5,7 @@ import lombok.Getter;
 import me.mrepiko.cymric.context.components.EntitySelectMenuContext;
 import me.mrepiko.cymric.elements.components.ComponentHandler;
 import me.mrepiko.cymric.elements.components.selectmenus.entityselect.EntitySelectMenuHandler;
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
+import me.mrepiko.cymric.elements.components.managers.runtime.RuntimeComponent;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;

@@ -1,9 +1,8 @@
-package me.mrepiko.cymric.managers.impl;
+package me.mrepiko.cymric.elements.tasks.managers;
 
 import me.mrepiko.cymric.annotations.elements.CymricTask;
 import me.mrepiko.cymric.elements.tasks.Task;
-import me.mrepiko.cymric.managers.GenericElementManager;
-import me.mrepiko.cymric.managers.TaskManager;
+import me.mrepiko.cymric.elements.managers.GenericElementManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ScheduledExecutorService;

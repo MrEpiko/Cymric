@@ -3,7 +3,7 @@ package me.mrepiko.cymric.elements.components;
 import me.mrepiko.cymric.context.plain.MessageContext;
 import me.mrepiko.cymric.elements.plain.Conditionable;
 import me.mrepiko.cymric.elements.plain.SerializableBotElement;
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
+import me.mrepiko.cymric.elements.components.managers.runtime.RuntimeComponent;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import org.jetbrains.annotations.NotNull;
 

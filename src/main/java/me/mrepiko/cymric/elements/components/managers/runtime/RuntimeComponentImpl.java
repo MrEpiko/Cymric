@@ -1,4 +1,4 @@
-package me.mrepiko.cymric.managers.runtime.impl;
+package me.mrepiko.cymric.elements.components.managers.runtime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,8 +6,7 @@ import me.mrepiko.cymric.context.components.ComponentContext;
 import me.mrepiko.cymric.context.plain.impl.MessageContextImpl;
 import me.mrepiko.cymric.elements.components.ComponentHandler;
 import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
-import me.mrepiko.cymric.managers.runtime.RuntimeExtra;
+import me.mrepiko.cymric.elements.managers.runtime.RuntimeExtra;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;

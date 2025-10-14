@@ -1,6 +1,7 @@
-package me.mrepiko.cymric.managers;
+package me.mrepiko.cymric.elements.command.managers;
 
 import me.mrepiko.cymric.elements.command.CommandHandler;
+import me.mrepiko.cymric.elements.managers.ElementManager;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 

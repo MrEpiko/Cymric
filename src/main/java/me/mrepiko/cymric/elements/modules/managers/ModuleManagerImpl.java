@@ -1,11 +1,10 @@
-package me.mrepiko.cymric.managers.impl;
+package me.mrepiko.cymric.elements.modules.managers;
 
 import me.mrepiko.cymric.CymricApi;
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.annotations.elements.CymricModule;
 import me.mrepiko.cymric.elements.modules.Module;
-import me.mrepiko.cymric.managers.GenericElementManager;
-import me.mrepiko.cymric.managers.ModuleManager;
+import me.mrepiko.cymric.elements.managers.GenericElementManager;
 import me.mrepiko.cymric.mics.Constants;
 import org.jetbrains.annotations.NotNull;
 

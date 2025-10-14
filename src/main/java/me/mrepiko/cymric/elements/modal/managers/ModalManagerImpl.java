@@ -1,13 +1,12 @@
-package me.mrepiko.cymric.managers.impl;
+package me.mrepiko.cymric.elements.modal.managers;
 
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.annotations.elements.CymricModal;
 import me.mrepiko.cymric.context.modal.ModalContextImpl;
 import me.mrepiko.cymric.elements.modal.ModalHandler;
 import me.mrepiko.cymric.elements.modal.data.ForgedModalData;
-import me.mrepiko.cymric.managers.GenericElementManager;
-import me.mrepiko.cymric.managers.ModalManager;
-import me.mrepiko.cymric.managers.runtime.RuntimeModal;
+import me.mrepiko.cymric.elements.managers.GenericElementManager;
+import me.mrepiko.cymric.elements.tasks.managers.runtime.RuntimeModal;
 import me.mrepiko.cymric.mics.Constants;
 import me.mrepiko.cymric.mics.Utils;
 import net.dv8tion.jda.api.entities.User;

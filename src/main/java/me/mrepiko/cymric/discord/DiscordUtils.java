@@ -1,6 +1,6 @@
 package me.mrepiko.cymric.discord;
 
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
+import me.mrepiko.cymric.elements.components.managers.runtime.RuntimeComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;

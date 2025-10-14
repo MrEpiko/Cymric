@@ -1,4 +1,4 @@
-package me.mrepiko.cymric.managers.impl;
+package me.mrepiko.cymric.elements.components.managers;
 
 import me.mrepiko.cymric.DiscordBot;
 import me.mrepiko.cymric.annotations.elements.CymricComponent;
@@ -20,11 +20,10 @@ import me.mrepiko.cymric.elements.components.selectmenus.entityselect.data.Forge
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.StringSelectMenuHandler;
 import me.mrepiko.cymric.elements.components.selectmenus.stringselect.data.ForgedStringSelectMenuData;
 import me.mrepiko.cymric.elements.data.ComponentData;
-import me.mrepiko.cymric.managers.ComponentManager;
-import me.mrepiko.cymric.managers.GenericElementManager;
-import me.mrepiko.cymric.managers.runtime.RuntimeComponent;
-import me.mrepiko.cymric.managers.runtime.RuntimeExtra;
-import me.mrepiko.cymric.managers.runtime.impl.RuntimeComponentImpl;
+import me.mrepiko.cymric.elements.managers.GenericElementManager;
+import me.mrepiko.cymric.elements.components.managers.runtime.RuntimeComponent;
+import me.mrepiko.cymric.elements.managers.runtime.RuntimeExtra;
+import me.mrepiko.cymric.elements.components.managers.runtime.RuntimeComponentImpl;
 import me.mrepiko.cymric.mics.Constants;
 import me.mrepiko.cymric.mics.Utils;
 import net.dv8tion.jda.api.entities.Message;

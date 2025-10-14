@@ -1,9 +1,9 @@
-package me.mrepiko.cymric.managers.runtime;
+package me.mrepiko.cymric.elements.components.managers.runtime;
 
 import me.mrepiko.cymric.context.components.ComponentContext;
 import me.mrepiko.cymric.elements.components.ComponentHandler;
-import me.mrepiko.cymric.elements.components.ComponentLoader;
 import me.mrepiko.cymric.elements.components.ForgedComponentDataContainer;
+import me.mrepiko.cymric.elements.managers.runtime.RuntimeElement;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import org.jetbrains.annotations.NotNull;

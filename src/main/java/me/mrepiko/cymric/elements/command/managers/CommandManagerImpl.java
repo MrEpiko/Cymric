@@ -1,4 +1,4 @@
-package me.mrepiko.cymric.managers.impl;
+package me.mrepiko.cymric.elements.command.managers;
 
 import lombok.AllArgsConstructor;
 import me.mrepiko.cymric.CymricApi;
@@ -25,8 +25,7 @@ import me.mrepiko.cymric.elements.command.contextual.data.ForgedContextualComman
 import me.mrepiko.cymric.elements.command.data.CommandAvailabilityType;
 import me.mrepiko.cymric.elements.command.data.CommandData;
 import me.mrepiko.cymric.elements.command.data.JdaCommandData;
-import me.mrepiko.cymric.managers.CommandManager;
-import me.mrepiko.cymric.managers.GenericElementManager;
+import me.mrepiko.cymric.elements.managers.GenericElementManager;
 import me.mrepiko.cymric.mics.Constants;
 import me.mrepiko.cymric.placeholders.PlaceholderMap;
 import me.mrepiko.cymric.placeholders.PlaceholderMapBuilder;
